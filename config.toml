@@ -12,6 +12,7 @@ publishDir = "../2019Workshop/"
 [permalinks]
     post = "/:slug/"
 
+
 [[menu.main]]
     name = "About"
     url = "/about/"
