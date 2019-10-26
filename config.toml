@@ -6,6 +6,10 @@ googleAnalytics = ""
 disqusShortname = ""
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
+baseurl = "https://nantucketdeveloper.github.io/2019Workshop/"
+canonifyurls = true
+relativeURLs = true
+publishDir = "../2019Workshop/"
 [permalinks]
     post = "/:slug/"
 
