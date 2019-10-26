@@ -1,0 +1,23 @@
+---
+title: "PackagingRCode"
+author: "April Wright"
+date: "10/26/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Schedule:
+
+| Time | Topic |
+|------|-------|
+| 9:00-9:15 | Why Package Code?  |
+| 9:15-9:45 | Utilities for setting up an R Package (Hands-On demo of devtools) |
+| 9:45-10:00 | Dissection of a simple package (one of mine, maybe). |
+| 10:00 - 10:20 | Dissection of a complex package (maybe phytools or Phangorn - Phangorn has some C++ code, correct, Klaus?) |
+| 10:20 - 10:30 | Coffee Break |
+| 10:30 - 11:15 | Testing software (hands-on). Run time tests & break points vs unit tests |
+| 11:15 - 11:25 | Getting support for packaging : ROpenScience Guidelines, community resources |
+| 11:25 - 11:45 | Publishing packages (All hands on deck? We all have different experiences doing this). Venues, journals, code review. |
