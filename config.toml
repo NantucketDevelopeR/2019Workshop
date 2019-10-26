@@ -1,4 +1,3 @@
-baseurl = "/"
 languageCode = "en-us"
 title = "A Hugo website"
 theme = "hugo-lithium"
@@ -12,6 +11,7 @@ relativeURLs = true
 publishDir = "../2019Workshop/"
 [permalinks]
     post = "/:slug/"
+
 
 [[menu.main]]
     name = "About"
