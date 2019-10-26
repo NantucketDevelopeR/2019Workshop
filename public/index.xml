@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>A Hugo website</title>
+    <link>/</link>
+    <description>Recent content on A Hugo website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 26 Oct 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>About</title>
+      <link>/about/</link>
+      <pubDate>Sat, 26 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/about/</guid>
+      <description>Website for 2019 Nantucket DevelopR workshop
+Monday night: Arrival, Lightning talks/introductions
+Tuesday AM: Klaus, do you want to do your trees in R talk again?
+Tuesday PM: More formal project pitches to get people into groups and working
+Weds AM: April - R packages
+Th AM: Claudia - effective use of GitHub
+Fri AM: Josef - Likelihood and Bayesian calculations in R</description>
+    </item>
+    
+    <item>
+      <title>Packaging R Code</title>
+      <link>/packaging-r-code/</link>
+      <pubDate>Sat, 26 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/packaging-r-code/</guid>
+      <description>Schedule:     Time Topic    9:00-9:15 Why Package Code?  9:15-9:45 Utilities for setting up an R Package (Hands-On demo of devtools)  9:45-10:00 Dissection of a simple package (one of mine, maybe).  10:00 - 10:20 Dissection of a complex package (maybe phytools or Phangorn - Phangorn has some C++ code, correct, Klaus?)  10:20 - 10:30 Coffee Break  10:30 - 11:15 Testing software (hands-on).</description>
+    </item>
+    
+  </channel>
+</rss>
