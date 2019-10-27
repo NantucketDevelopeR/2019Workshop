@@ -8,7 +8,7 @@ Website for 2019 Nantucket DevelopR workshop
 Monday night: Arrival, Lightning talks/introductions
 
 
-Tuesday  AM: Klaus, do you want to do your trees in R talk again?
+Tuesday  AM: Klaus - phylogenetic trees in R talk
 
 
 Tuesday PM: More formal project pitches to get people into groups and working
