@@ -1,8 +1,11 @@
 ---
-site: blogdown:::blogdown_site
+title: "About"
+author: "Nantucket DevelopRs staff"
+date: "2019-10-27"
+output: html_document
 ---
-# 2019Workshop
 
+Website for 2019 Nantucket DevelopR workshop
 
 Monday night: Arrival, Lightning talks/introductions
 

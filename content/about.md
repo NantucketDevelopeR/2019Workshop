@@ -13,7 +13,7 @@ Tuesday  AM: Klaus, do you want to do your trees in R talk again?
 
 Tuesday PM: More formal project pitches to get people into groups and working
 
-Weds AM: April - [R packages](https://github.com/NantucketDevelopeR/2019Workshop/packaging-r-code/)
+Weds AM: April - [R packages](https://nantucketdeveloper.github.io/2019Workshop/public/packaging-r-code/)
 
 Th AM: Claudia - effective use of GitHub
 
