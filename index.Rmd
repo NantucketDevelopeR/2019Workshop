@@ -1,6 +1,10 @@
 ---
-site: blogdown:::blogdown_site
+title: "Home"
+author: "Nantucket DevelopRs staff"
+date: "2019-10-27"
+output: html_document
 ---
+
 # 2019Workshop
 
 
