@@ -1,6 +1,8 @@
 ---
-date: "2019-10-26"
-title: About
+title: "About"
+author: "Nantucket DevelopRs staff"
+date: "2019-10-27"
+output: html_document
 ---
 
 Website for 2019 Nantucket DevelopR workshop
