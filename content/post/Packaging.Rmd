@@ -11,13 +11,100 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Schedule:
 
-| Time | Topic |
-|------|-------|
-| 9:00-9:15 | Why Package Code?  |
-| 9:15-9:45 | Utilities for setting up an R Package (Hands-On demo of devtools) |
-| 9:45-10:00 | Dissection of a simple package (one of mine, maybe). |
-| 10:00 - 10:20 | Dissection of a complex package (maybe phytools or Phangorn - Phangorn has some C++ code, correct, Klaus?) |
-| 10:20 - 10:30 | Coffee Break |
-| 10:30 - 11:15 | Testing software (hands-on). Run time tests & break points vs unit tests |
-| 11:15 - 11:25 | Getting support for packaging : ROpenScience Guidelines, community resources |
-| 11:25 - 11:45 | Publishing packages (All hands on deck? We all have different experiences doing this). Venues, journals, code review. |
+## Why Put Code In a Package? 
+
+We're all busy, stressed-out people. Why should we put in the effort to package code, when we could be starting another project. Or collecting data on another paper? I'd argue that there are tree main points:
+
+- Reproducibility:  If a package is well-developed, you know the code works. If it's documented, you know who it works. 
+- Tidyness: Most R packages have a standard structure incorporating both documentation and testing. Everything in its right place, and a place for everything.
+- Collaboration: You are your most common collaborator. Who remembers what they had for breakfast? Documentation is a love letter to yourself. Whether it's for you to remember what you did, or so you don't get an email when a stressed-out grad student finds your package, using a standard infrastructure means people can find what they need.
+
+## RStudio and integrated tools for package building
+
+File > New Project > R Package
+
+Choose to initialize a revision management repository with the package.
+
+When we do this in RStudio, R initializes a package. It was several components:
+
+- man: this is where documentation will live
+- .Rproj: this houses variables defined in the project
+- R: this is where R code and functions will live
+- Description: which specifies the metadata associated with the project.
+
+You can see that our package initialized with one function, `hello.R`. In it, you'll notice one function. If we type `Cmd + Shift + B`, this will build and install the package. Once we do this, we can call the `hello()` function. This also includes `hello()` into the standard R documentation system. If you type `?hello`, for example you will see the usual help window display.
+
+We can also Check or Test our package. Try `Cmd + Shift + E`. What is this output you see?
+
+How about `Cmd + Shift + T`? Right - we don't have a test directory yet!
+
+## Package Dissections
+
+Let's look briefly at an R package and see what one looks like under the hood. We'll look at three treeStartR (Wright), phangorn (Schliep), and one with an associated Shiny app (Wright). 
+
+## Testing
+
+Now, we will return to our own package. We have one function, and no tests. People can mean different things when they say "testing". We will talk today about runtime testing, and unit testing.
+
+### Unit testing
+
+Unit tests can be thought of as automated checking to make sure your code works. For example, let's write a function that calculates the area of a square. Save it into your R folder, and rebuild the package. Run your function. Did it work? How do you know?
+
+Manually checking code works great for easy values. Any amount of complexity, though, rapidly descreases our ability to test by eye. Unit testing tests the code itself. Are you getting the expected output from a set of pre-defined in and outputs? If not, that could indicate a problem. Perhaps the interface to a function on which your code relies has changed, and now you're providing the wrong inputs. Or between versions, the default precision changes. You want to capture these changes to make sure you're on track.
+ 
+Let's start by making a `tests` folder. We'll use the R package `testthat` to write some tests. Make a subfolder called `testthat`. Type `testthat::` and use tab to cycle through the options. Are there any options that would be good for testing something about our calculation? The format of a test will look like this:
+
+```{r, eval = FALSE}
+
+test_that("Test square_calc(known data)", {
+  Condition 
+})
+```
+
+For example, if we wanted to check that we get the expected result, we could do:
+
+```{r}
+library(testthat)
+library(samplr)
+test_that("Test square_calc()", {
+  expect_equal(6.0025, square_calc(2.45)) 
+})
+```
+
+What types of conditions will cause this to fail?
+
+### Run Time Testing
+
+Where unit testing is about catching errors in the code, errors caused by dependency changes, and similar errors, runtime testing tests the behavior of the user and data. For example, if your method cannot handle missing data values, you need to make sure your user are not trying to use data with missing characters. Every run time check you write is an email you don't get later.
+
+What is something that could break our function? For example, my idea is to make sure the side of the square is a numeric type:
+
+```{r}
+library(assertthat)
+
+ square_calc <- function(side_length){
+      side_length %has_attr% "numeric"
+       area <- side_length^2
+       return(area)
+   }
+```
+
+Try to break it! This is often referred to as a `precondition` - that is, if this is not true prior to the start of the function, the function will not execute. We can also test `post conditions`, which are attributes we need to be true at the end of the function.
+
+```{r}
+library(assertthat)
+
+ square_calc <- function(side_length){
+      side_length %has_attr% "numeric"
+       area <- side_length^2
+       assert_that(sqrt(area) == side_length)
+       return(area)
+   }
+```
+
+
+## Getting Help with Packages
+
+One of the trickiest things about package development is a lot of the help we get as novices sort of falls away.
+
+

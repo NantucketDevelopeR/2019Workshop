@@ -10,7 +10,7 @@
 <meta property="og:title" content="Packaging R Code - A Hugo website">
 
 
-  <link href='../favicon.ico' rel='icon' type='image/x-icon'/>
+  <link href='https://nantucketdeveloper.github.io/2019Workshop/favicon.ico' rel='icon' type='image/x-icon'/>
 
 
 
@@ -19,6 +19,11 @@
 
 
 
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
 
 
 
@@ -55,7 +60,7 @@
 
   <article class="article">
     
-    <span class="article-duration">1 min read</span>
+    <span class="article-duration">4 min read</span>
     
 
     <h1 class="article-title">Packaging R Code</h1>
@@ -70,52 +75,79 @@
 
 <div id="schedule" class="section level1">
 <h1>Schedule:</h1>
-<table>
-<colgroup>
-<col width="46%" />
-<col width="53%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Time</th>
-<th>Topic</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>9:00-9:15</td>
-<td>Why Package Code?</td>
-</tr>
-<tr class="even">
-<td>9:15-9:45</td>
-<td>Utilities for setting up an R Package (Hands-On demo of devtools)</td>
-</tr>
-<tr class="odd">
-<td>9:45-10:00</td>
-<td>Dissection of a simple package (one of mine, maybe).</td>
-</tr>
-<tr class="even">
-<td>10:00 - 10:20</td>
-<td>Dissection of a complex package (maybe phytools or Phangorn - Phangorn has some C++ code, correct, Klaus?)</td>
-</tr>
-<tr class="odd">
-<td>10:20 - 10:30</td>
-<td>Coffee Break</td>
-</tr>
-<tr class="even">
-<td>10:30 - 11:15</td>
-<td>Testing software (hands-on). Run time tests &amp; break points vs unit tests</td>
-</tr>
-<tr class="odd">
-<td>11:15 - 11:25</td>
-<td>Getting support for packaging : ROpenScience Guidelines, community resources</td>
-</tr>
-<tr class="even">
-<td>11:25 - 11:45</td>
-<td>Publishing packages (All hands on deck? We all have different experiences doing this). Venues, journals, code review.</td>
-</tr>
-</tbody>
-</table>
+<div id="why-put-code-in-a-package" class="section level2">
+<h2>Why Put Code In a Package?</h2>
+<p>We’re all busy, stressed-out people. Why should we put in the effort to package code, when we could be starting another project. Or collecting data on another paper? I’d argue that there are tree main points:</p>
+<ul>
+<li>Reproducibility: If a package is well-developed, you know the code works. If it’s documented, you know who it works.</li>
+<li>Tidyness: Most R packages have a standard structure incorporating both documentation and testing. Everything in its right place, and a place for everything.</li>
+<li>Collaboration: You are your most common collaborator. Who remembers what they had for breakfast? Documentation is a love letter to yourself. Whether it’s for you to remember what you did, or so you don’t get an email when a stressed-out grad student finds your package, using a standard infrastructure means people can find what they need.</li>
+</ul>
+</div>
+<div id="rstudio-and-integrated-tools-for-package-building" class="section level2">
+<h2>RStudio and integrated tools for package building</h2>
+<p>File &gt; New Project &gt; R Package</p>
+<p>Choose to initialize a revision management repository with the package.</p>
+<p>When we do this in RStudio, R initializes a package. It was several components:</p>
+<ul>
+<li>man: this is where documentation will live</li>
+<li>.Rproj: this houses variables defined in the project</li>
+<li>R: this is where R code and functions will live</li>
+<li>Description: which specifies the metadata associated with the project.</li>
+</ul>
+<p>You can see that our package initialized with one function, <code>hello.R</code>. In it, you’ll notice one function. If we type <code>Cmd + Shift + B</code>, this will build and install the package. Once we do this, we can call the <code>hello()</code> function. This also includes <code>hello()</code> into the standard R documentation system. If you type <code>?hello</code>, for example you will see the usual help window display.</p>
+<p>We can also Check or Test our package. Try <code>Cmd + Shift + E</code>. What is this output you see?</p>
+<p>How about <code>Cmd + Shift + T</code>? Right - we don’t have a test directory yet!</p>
+</div>
+<div id="package-dissections" class="section level2">
+<h2>Package Dissections</h2>
+<p>Let’s look briefly at an R package and see what one looks like under the hood. We’ll look at three treeStartR (Wright), phangorn (Schliep), and one with an associated Shiny app (Wright).</p>
+</div>
+<div id="testing" class="section level2">
+<h2>Testing</h2>
+<p>Now, we will return to our own package. We have one function, and no tests. People can mean different things when they say “testing”. We will talk today about runtime testing, and unit testing.</p>
+<div id="unit-testing" class="section level3">
+<h3>Unit testing</h3>
+<p>Unit tests can be thought of as automated checking to make sure your code works. For example, let’s write a function that calculates the area of a square. Save it into your R folder, and rebuild the package. Run your function. Did it work? How do you know?</p>
+<p>Manually checking code works great for easy values. Any amount of complexity, though, rapidly descreases our ability to test by eye. Unit testing tests the code itself. Are you getting the expected output from a set of pre-defined in and outputs? If not, that could indicate a problem. Perhaps the interface to a function on which your code relies has changed, and now you’re providing the wrong inputs. Or between versions, the default precision changes. You want to capture these changes to make sure you’re on track.</p>
+<p>Let’s start by making a <code>tests</code> folder. We’ll use the R package <code>testthat</code> to write some tests. Make a subfolder called <code>testthat</code>. Type <code>testthat::</code> and use tab to cycle through the options. Are there any options that would be good for testing something about our calculation? The format of a test will look like this:</p>
+<pre class="r"><code>test_that(&quot;Test square_calc(known data)&quot;, {
+  Condition 
+})</code></pre>
+<p>For example, if we wanted to check that we get the expected result, we could do:</p>
+<pre class="r"><code>library(testthat)
+library(samplr)
+test_that(&quot;Test square_calc()&quot;, {
+  expect_equal(6.0025, square_calc(2.45)) 
+})</code></pre>
+<p>What types of conditions will cause this to fail?</p>
+</div>
+<div id="run-time-testing" class="section level3">
+<h3>Run Time Testing</h3>
+<p>Where unit testing is about catching errors in the code, errors caused by dependency changes, and similar errors, runtime testing tests the behavior of the user and data. For example, if your method cannot handle missing data values, you need to make sure your user are not trying to use data with missing characters. Every run time check you write is an email you don’t get later.</p>
+<p>What is something that could break our function? For example, my idea is to make sure the side of the square is a numeric type:</p>
+<pre class="r"><code>library(assertthat)
+
+ square_calc &lt;- function(side_length){
+      side_length %has_attr% &quot;numeric&quot;
+       area &lt;- side_length^2
+       return(area)
+   }</code></pre>
+<p>Try to break it! This is often referred to as a <code>precondition</code> - that is, if this is not true prior to the start of the function, the function will not execute. We can also test <code>post conditions</code>, which are attributes we need to be true at the end of the function.</p>
+<pre class="r"><code>library(assertthat)
+
+ square_calc &lt;- function(side_length){
+      side_length %has_attr% &quot;numeric&quot;
+       area &lt;- side_length^2
+       assert_that(sqrt(area) == side_length)
+       return(area)
+   }</code></pre>
+</div>
+</div>
+<div id="getting-help-with-packages" class="section level2">
+<h2>Getting Help with Packages</h2>
+<p>One of the trickiest things about package development is a lot of the help we get as novices sort of falls away.</p>
+</div>
 </div>
 
     </div>
@@ -139,6 +171,18 @@
 
     </div>
     
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
 
     
 
