@@ -10,7 +10,7 @@
 <meta property="og:title" content="Tree structure - A Hugo website">
 
 
-  <link href='../favicon.ico' rel='icon' type='image/x-icon'/>
+  <link href='https://nantucketdeveloper.github.io/2019Workshop/favicon.ico' rel='icon' type='image/x-icon'/>
 
 
 
@@ -60,7 +60,7 @@
 
   <article class="article">
     
-    <span class="article-duration">6 min read</span>
+    <span class="article-duration">8 min read</span>
     
 
     <h1 class="article-title">Tree structure</h1>
@@ -73,35 +73,86 @@
       
 
 
+<div id="a-brief-history-of-phylogenetics-in-r" class="section level2">
+<h2>A brief history of phylogenetics in R</h2>
+<p>1993: first release of R</p>
+<p>1996: Ihaka &amp; Gentleman, J. Comput. Graph. Statist., 5: 299–314</p>
+<p>2000: R 1.0.0</p>
+<p>2001: start the development of ape</p>
+<p>2002: first release of ape</p>
+<p>2008: first release of phangorn</p>
+<p>2019: 260 packages depending on ape on CRAN, 16 on BioConductor (and 100’s elsewhere: R-Forge, GitHub, . . .)</p>
+</div>
+<div id="getting-help" class="section level2">
+<h2>Getting help</h2>
+<p>So many functions, but how to find/remember them?</p>
+<ul>
+<li>write scripts (and maintain them!)</li>
+<li>help.start()</li>
+<li>?… (or help(“…”))</li>
+<li>apropos(“…”)</li>
+<li>use TAB-completion (or a “cool” editor)</li>
+</ul>
+<p>Operators are also functions:</p>
+<pre class="r fold-show"><code>`+` # or get(&quot;+&quot;)
+## function (e1, e2)  .Primitive(&quot;+&quot;)</code></pre>
+<pre class="r fold-show"><code>`+`(1, 2)
+## [1] 3</code></pre>
+<p>Find generic functions for a class</p>
+<p>Common generic functions are print, plot, c, summary, anova, [, …</p>
+<pre class="r fold-show"><code>library(ape)
+methods(class=&quot;phylo&quot;)
+##  [1] +                    addConfidences       all.equal           
+##  [4] as.evonet            as.hclust            as.matching         
+##  [7] as.networx           as.splits            c                   
+## [10] coalescent.intervals cophenetic           di2multi            
+## [13] identify             is.binary            is.rooted           
+## [16] is.ultrametric       makeLabel            midpoint            
+## [19] multi2di             Nedge                Nnode               
+## [22] Ntip                 plot                 print               
+## [25] reorder              root                 simSeq              
+## [28] skyline              summary              unroot              
+## [31] updateLabel          vcv                 
+## see &#39;?methods&#39; for accessing help and source code</code></pre>
+<p>Run all examples of the help files!</p>
+<pre class="r fold-show"><code>example(plot.phylo)</code></pre>
+<p>However examples in (CRAN) R packages are not allowed to run longer than 5 seconds. So for inference this results frequently in toy examples. You need to change to higher number of bootstrap iterations, change stop criterion for optimisation et cetera.</p>
+<p>Many packages on CRAN and all on Bioconductor come with vignettes.</p>
+<pre class="r fold-show"><code>vignette()
+vignette(package=&quot;phangorn&quot;)
+vignette(&quot;Trees&quot;, package=&quot;phangorn&quot;)</code></pre>
+<p>And there is google and stackoverflow.</p>
+</div>
 <div id="the-phylo-class" class="section level2">
 <h2>The <code>phylo</code> class</h2>
 <p>The <code>phylo</code> class is a tree structure in <code>ape</code> are the standard for storing phylogenetic in R. It is also used in more than 260 packages on CRAN.</p>
 <p>This class represents phylogenetic trees and networks; (internal) nodes are of
 degree ≥ 2; the tips (terminal nodes) are of degree 1. The tip labels may be
 replicated (or can even missing). Idem for the node labels (which are optional).</p>
-<p>Package <code>ape</code> and <code>phangorn</code> contains functions to import trees and splits
-networks:</p>
-<ul>
-<li><code>read.tree</code> Newick files</li>
-<li><code>read.nexus</code> NEXUS files (only trees)</li>
-<li><code>read.evonet</code> networks in extended Newick format</li>
-<li><code>read.networx</code> phylogenetic splits networks in nexus format (Splitstree)</li>
-</ul>
-<p>and</p>
-<ul>
-<li><code>write.tree</code> Newick (one or several trees)</li>
-<li><code>write.nexus</code> NEXUS (one or several trees with or without translate block)</li>
-<li><code>write.evonet</code> extended Newick (.nhx)</li>
-<li><code>read.networx</code> phylogenetic splits networks in nexus format (e.g. Splitstree)</li>
-</ul>
+</div>
+<div id="structure-of-phylo-objects" class="section level2">
+<h2>Structure of phylo objects</h2>
 <p>An object of class <code>phylo</code> is a list containing at least the following objects:</p>
 <ol style="list-style-type: decimal">
 <li>An <em>integer</em> matrix named edge with two columns and as many rows as there are edges in the tree.</li>
-<li>A <em>character</em> vector named <code>tip.label</code>.<br />
+<li>A <em>character</em> vector named <code>tip.label</code>, can be "".<br />
 </li>
 <li>An <em>integer</em> <code>Nnode</code> with the number of internal nodes.</li>
 <li>A class attribute <code>phylo</code>.</li>
 </ol>
+<pre class="r fold-show"><code>library(ape)
+tree &lt;- read.tree(text = &quot;(,(,));&quot;)
+plot(tree)
+nodelabels()
+tiplabels()</code></pre>
+<p><img src="../post/Tree_structure_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r fold-show"><code>str(tree)
+## List of 3
+##  $ edge     : int [1:4, 1:2] 4 4 5 5 1 5 2 3
+##  $ Nnode    : int 2
+##  $ tip.label: chr [1:3] &quot;&quot; &quot;&quot; &quot;&quot;
+##  - attr(*, &quot;class&quot;)= chr &quot;phylo&quot;
+##  - attr(*, &quot;order&quot;)= chr &quot;cladewise&quot;</code></pre>
 <p>The storage mode is important. Saving a vector of integers saves memory in comparison to vector of doubles.
 Also objects of class <code>phylo</code> often in C-Code so you need to take care of this.</p>
 <p>Also comparing doubles is dangerous:</p>
@@ -109,17 +160,24 @@ Also objects of class <code>phylo</code> often in C-Code so you need to take car
 y &lt;- sqrt(3)^2
 x==y
 ## [1] FALSE</code></pre>
-<p>In the edge matrix each edge (branch) is coded by the nodes it connects. Tips (terminal nodes, leaves, labels, …) are numbered from 1 to <code>n</code>, where <code>n</code> is the number of tips. The root is numbered <code>n+1</code>. The ancestral node (closer to the root) is always on the lefthand column.</p>
+<p>In the edge matrix each edge (branch) is coded by the nodes it connects.</p>
+<pre class="r fold-show"><code>tree$edge
+##      [,1] [,2]
+## [1,]    4    1
+## [2,]    4    5
+## [3,]    5    2
+## [4,]    5    3</code></pre>
+<p>Tips (terminal nodes, leaves, labels, …) are numbered from 1 to <code>n</code>, where <code>n</code> is the number of tips. The root is numbered <code>n+1</code>. The ancestral node (closer to the root) is always on the lefthand column.</p>
 <p>Some important properties and observations:
 * the first column only contains values greater than <code>n</code>.
-* all nodes, s the root, appear exactly once in the second column.
+* all nodes, but the root, appear exactly once in the second column.
 * in a strictly bifurcating tree, all nodes greater then <code>n</code> appear twice and the root node <code>n+1</code>, in case of ‘twice’ for rooted and <code>trice</code> for unrooted trees.</p>
 <p>So we can start and construct a minimal tree ourselves:</p>
 <pre class="r fold-show"><code>library(ape)
 simple_tree &lt;- structure(list(edge = matrix(c(3L, 3L, 1L, 2L), 2, 2), 
                         tip.label = c(&quot;t1&quot;, &quot;t2&quot;), Nnode = 1L), class = &quot;phylo&quot;)
 plot(simple_tree)</code></pre>
-<p><img src="../post/Tree_structure_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="../post/Tree_structure_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <p>A <code>phylo</code> object always contains an <code>edge</code>, <code>tip.label</code> and <code>Nnode</code>. Often a phylo object contains some of the following elements:</p>
 <ol style="list-style-type: decimal">
 <li>a <em>numeric</em> vector <code>edge.length</code>. The length of the vector is number of rows of the <code>edge</code> matrix and the order corresponds to the rows in <code>edge</code>.</li>
@@ -130,83 +188,40 @@ plot(simple_tree)</code></pre>
 </div>
 <div id="tree-traversal" class="section level2">
 <h2>Tree traversal</h2>
-<p>Tree traversal in ape is implemented iterative in contrast to the recursive implementation in most other phylogenetic programs.
-### Preorder tree traversal
-<em>Preorder tree traversal</em> is travelling through the tree from the root to the tips visiting always the all nodes the right subtree before visiting the right subtree.</p>
+<p>Tree traversal in ape is implemented iterative in contrast to the recursive implementation in most other phylogenetic programs.</p>
+<div id="preorder-tree-traversal" class="section level3">
+<h3>Preorder tree traversal</h3>
+<p><em>Preorder tree traversal</em> is travelling through the tree from the root to the tips visiting always the all nodes the right subtree before visiting the right subtree.</p>
 <pre class="r fold-show"><code>tree &lt;- rtree(5)
 plot(tree, show.tip.label = FALSE)
 nodelabels()
 tiplabels()</code></pre>
-<p><img src="../post/Tree_structure_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="../post/Tree_structure_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <pre class="r fold-show"><code>reorder(tree, &quot;cladewise&quot;)$edge
 ##      [,1] [,2]
 ## [1,]    6    7
-## [2,]    7    1
-## [3,]    7    2
-## [4,]    6    8
-## [5,]    8    9
-## [6,]    9    3
+## [2,]    7    8
+## [3,]    8    1
+## [4,]    8    2
+## [5,]    7    3
+## [6,]    6    9
 ## [7,]    9    4
-## [8,]    8    5</code></pre>
+## [8,]    9    5</code></pre>
+</div>
 <div id="postorder-tree-traversal" class="section level3">
 <h3>Postorder tree traversal</h3>
 <p><em>Postorder tree traversal</em> travels through the tree from the tips through the root. All the descendent nodes need to be visited before the ancestral node.</p>
 <pre class="r fold-show"><code>reorder(tree, &quot;postorder&quot;)$edge
 ##      [,1] [,2]
-## [1,]    9    3
-## [2,]    9    4
-## [3,]    8    9
-## [4,]    8    5
-## [5,]    7    1
-## [6,]    7    2
+## [1,]    9    4
+## [2,]    9    5
+## [3,]    8    1
+## [4,]    8    2
+## [5,]    7    8
+## [6,]    7    3
 ## [7,]    6    7
-## [8,]    6    8</code></pre>
+## [8,]    6    9</code></pre>
 <p>Defining the order of the traversal of the tree this way allows to iterate just through the tree. Reorder not only changes the order of the <code>edge</code> matrix, but also of the <code>edge.length</code> if it exists.</p>
-</div>
-<div id="convenience-functions" class="section level3">
-<h3>Convenience functions</h3>
-<p>There are several convenience functions to achieve common tasks:</p>
-<table>
-<colgroup>
-<col width="31%" />
-<col width="35%" />
-<col width="33%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Operation</th>
-<th>High level</th>
-<th>Low level</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>How many tips?</td>
-<td>Ntip(tr)</td>
-<td>length(tr$tip.label)</td>
-</tr>
-<tr class="even">
-<td>How many node?</td>
-<td>Nnode(tr)</td>
-<td>tr$Nnode</td>
-</tr>
-<tr class="odd">
-<td>How many edges?</td>
-<td>Nedge(tr)</td>
-<td>nrow(tr$edge)</td>
-</tr>
-<tr class="even">
-<td>What are the ancestor of x</td>
-<td>Ancestors(tr, x, “parent”)</td>
-<td>tr$edge[tr$edge[,2]==x , 1]</td>
-</tr>
-<tr class="odd">
-<td>What are the descendants of x</td>
-<td>Descendants(tr, x, “children”)</td>
-<td>tr$edge[tr$edge[,1]==x , 2]</td>
-</tr>
-</tbody>
-</table>
 <p>###Excercise 1:
 Write a function which counts how many descendants each node has.
 The output should look like:</p>
@@ -216,7 +231,7 @@ tree &lt;- rtree(5)
 plot(tree, show.tip.label = FALSE)
 nodelabels()
 tiplabels()</code></pre>
-<p><img src="../post/Tree_structure_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="../post/Tree_structure_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <pre class="r fold-show"><code>nr_desc(tree)
 ## [1] 1 1 1 1 1 5 4 3 2</code></pre>
 <p>My solutions</p>
@@ -282,21 +297,111 @@ object.size(trees) / object.size(trees_compact)
 ## 2.5 bytes</code></pre>
 <p>Switching between the two representations can be done via ‘.compressTipLabel’ and ‘.uncompressTipLabel’.</p>
 </div>
+<div id="importing-and-exporting-trees-and-networks" class="section level2">
+<h2>Importing and exporting trees and networks</h2>
+<p>Package <code>ape</code> and <code>phangorn</code> contains functions to import trees and splits
+networks:</p>
+<ul>
+<li><code>read.tree</code> Newick files</li>
+<li><code>read.nexus</code> NEXUS files (only trees)</li>
+<li><code>read.evonet</code> networks in extended Newick format</li>
+<li><code>read.networx</code> phylogenetic splits networks in nexus format (Splitstree)</li>
+</ul>
+<p>and</p>
+<ul>
+<li><code>write.tree</code> Newick (one or several trees)</li>
+<li><code>write.nexus</code> NEXUS (one or several trees with or without translate block)</li>
+<li><code>write.evonet</code> extended Newick (.nhx)</li>
+<li><code>read.networx</code> phylogenetic splits networks in nexus format (e.g. Splitstree)</li>
+</ul>
+<p>Any R object(s) can be saved on disk: this is much better if these data are used
+only in R. (*Faster to read/write, smaller files, and no loss of numerical accuracy.)
+Several objects:</p>
+<ul>
+<li><p><code>save(X, a, y, file = "X.rda")</code> several objects with their names</p></li>
+<li><p><code>load("X.rda")</code> <span class="math inline">\(\rightarrow\)</span> restores object names (i.e., possibly deletes previous
+X, a, y in the workspace)
+A single object:</p></li>
+<li><p><code>saveRDS(X, file = "X.rds")</code></p></li>
+<li><p><code>Y &lt;- readRDS("X.rds")</code> <span class="math inline">\(\rightarrow\)</span> the name of the object can be changed</p></li>
+</ul>
+</div>
+<div id="functions-for-phylo-objects" class="section level2">
+<h2>Functions for <code>phylo</code> objects</h2>
+<p>Before you write a function look what’s already out there.</p>
+<div id="some-convenience-functions" class="section level3">
+<h3>Some convenience functions</h3>
+<p>There are several convenience functions to achieve common tasks:</p>
+<table>
+<colgroup>
+<col width="31%" />
+<col width="35%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Operation</th>
+<th>High level</th>
+<th>Low level</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>How many tips?</td>
+<td>Ntip(tr)</td>
+<td>length(tr$tip.label)</td>
+</tr>
+<tr class="even">
+<td>How many node?</td>
+<td>Nnode(tr)</td>
+<td>tr$Nnode</td>
+</tr>
+<tr class="odd">
+<td>How many edges?</td>
+<td>Nedge(tr)</td>
+<td>nrow(tr$edge)</td>
+</tr>
+<tr class="even">
+<td>What are the ancestor of x</td>
+<td>Ancestors(tr, x, “parent”)</td>
+<td>tr$edge[tr$edge[,2]==x , 1]</td>
+</tr>
+<tr class="odd">
+<td>What are the descendants of x</td>
+<td>Descendants(tr, x, “children”)</td>
+<td>tr$edge[tr$edge[,1]==x , 2]</td>
+</tr>
+</tbody>
+</table>
+<p>Ntip, Nnode, Nedge are generic and work on <code>phylo</code> and <code>multiPhylo</code> objects. <code>Ancestors</code> and <code>Descendants</code> are vectorized , i.e. argument node can be a vector.</p>
+</div>
+</div>
+<div id="some-useful-functions-to-modify-trees" class="section level2">
+<h2>Some useful functions to modify trees</h2>
+<p><code>root(phy, outgroup, ...)</code>,
+<code>unroot(phy)</code>,
+<code>midpoint(tree)</code>,
+<code>drop.tip(phy, tip, ...)</code>,
+<code>keep.tip(phy, tip)</code>,
+<code>extract.clade(phy, node, ...)</code>,
+<code>bind.tree(x, y, ...)</code>,
+<code>c(...)</code>,
+<code>multi2di(phy, random = TRUE)</code>,
+<code>di2multi(phy, tol = 1e-8)</code>,
+<code>rotate(phy, node)</code>,
+<code>rotateConstr(phy, X)</code>,
+<code>reorder(phy, order = "cladewise")</code></p>
+<p>Some of the above functions have the option interactive (FALSE by default) and many are generic.</p>
+<p>And some functions to explore the Baumraum (tree space)
+<code>nni</code>, <code>rNNI</code>, <code>rSPR</code>, <code>allTrees</code>.</p>
+</div>
 <div id="networx-class" class="section level2">
 <h2>networx class</h2>
-<p>The networx class is build up on <code>phylo</code> to allow to store (undirected)
-phylogenetic networx. I may will go into more detail later the week.</p>
+<p>The networx class is build up on <code>phylo</code> to allow to store (undirected) phylogenetic networx. I may will go into more detail later the week.</p>
 <pre class="r fold-show"><code>library(magrittr)
 phangorn:::allCircularSplits(6) %&gt;% as.networx %&gt;% plot(type=&quot;2D&quot;)</code></pre>
-<p><img src="../post/Tree_structure_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
-</div>
-<div id="phydat" class="section level2">
-<h2>phyDat</h2>
-<p><code>phyDat</code> is the main data class in <code>phangorn</code> to store aligned discrete data. This can be binary, nucleotide, protein, codon, morphological of dicrete data.
-The data format is very similar to the internal forma of a <code>factor</code> variable in R.
-The data are stored as vectors integers in a list with as many vectors as sequences.</p>
-<p>The phyDat format has the following attributes.
-<em>weight</em></p>
+<p><img src="../post/Tree_structure_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p>Special thanks to Emmanuel Paradis for sharing some lecture notes!</p>
 <p>Paradis E. (2012) Definition of Formats for Coding Phylogenetic Trees in R <a href="http://ape-package.ird.fr/misc/FormatTreeR_24Oct2012.pdf">url</a></p>
 <p>Paradis E. (2012) Analysis of Phylogenetics and Evolution with R, 2nd ed., Springer, New York</p>
 <p>Paradis E. &amp; Schliep K. (2019) ape 5.0: an environment for modern phylogenetics and evolutionary analyses in R, Bioinformatics 35 (3), 526-528</p>

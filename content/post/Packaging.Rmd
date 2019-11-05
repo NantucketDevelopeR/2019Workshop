@@ -121,3 +121,4 @@ One of the trickiest things about package development is a lot of the help we ge
 
 [ROpenScience](https://devguide.ropensci.org/) has an R Package guide, which is chock full of wisdom, literate programming advice, and information on testing and other intermediate skills.
 They also operate a [forum](https://discuss.ropensci.org/) for developers, users, and other people who dig software, I guess? The culture of it is very collegial.
+

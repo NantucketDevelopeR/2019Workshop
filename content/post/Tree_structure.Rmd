@@ -35,6 +35,62 @@ root_to_tip <-  function(x){
 }
 ```
 
+## A brief history of phylogenetics in R
+
+1993: first release of R
+
+1996: Ihaka & Gentleman, J. Comput. Graph. Statist., 5: 299–314
+
+2000: R 1.0.0
+
+2001: start the development of ape 
+
+2002: first release of ape
+
+2008: first release of phangorn
+
+2019: 260 packages depending on ape on CRAN, 16 on BioConductor (and 100’s elsewhere: R-Forge, GitHub, . . .)
+
+
+## Getting help
+
+So many functions, but how to find/remember them?
+
+* write scripts (and maintain them!)
+* help.start()
+* ?... (or help("..."))
+* apropos("...")
+* use TAB-completion (or a "cool" editor)
+
+Operators are also functions:
+```{r}
+`+` # or get("+")
+`+`(1, 2)
+```
+
+Find generic functions for a class
+
+Common generic functions are print, plot, c, summary, anova, [, ...
+```{r}
+library(ape)
+methods(class="phylo")
+```
+Run all examples of the help files!
+```{r eval=FALSE}
+example(plot.phylo)
+```
+However examples in (CRAN) R packages are not allowed to run longer than 5 seconds. So for inference this results frequently in toy examples. You need to change to higher number of bootstrap iterations, change stop criterion for optimisation et cetera.  
+
+
+Many packages on CRAN and all on Bioconductor come with vignettes.
+```{r eval=FALSE}
+vignette()
+vignette(package="phangorn")
+vignette("Trees", package="phangorn")
+```
+
+
+And there is google and stackoverflow. 
 
 
 ## The `phylo` class
@@ -45,29 +101,24 @@ This class represents phylogenetic trees and networks; (internal) nodes are of
 degree ≥ 2; the tips (terminal nodes) are of degree 1. The tip labels may be
 replicated (or can even missing). Idem for the node labels (which are optional).
 
-Package `ape` and `phangorn` contains functions to import trees and splits
-networks: 
 
-* `read.tree` Newick files 
-* `read.nexus` NEXUS files (only trees)
-* `read.evonet` networks in extended Newick format
-* `read.networx` phylogenetic splits networks in nexus format (Splitstree)
-
-and 
-
-* `write.tree` Newick (one or several trees)
-* `write.nexus` NEXUS (one or several trees with or without translate block)
-* `write.evonet` extended Newick (.nhx)
-* `read.networx` phylogenetic splits networks in nexus format (e.g. Splitstree)
-
+## Structure of phylo objects
 
 An object of class `phylo` is a list containing at least the following objects:
-  
+
 1. An *integer* matrix named edge with two columns and as many rows as there are edges in the tree.
-2. A *character* vector named `tip.label`.  
+2. A *character* vector named `tip.label`, can be "".  
 3. An *integer* `Nnode` with the number of internal nodes.
 4. A class attribute `phylo`. 
 
+```{r}
+library(ape)
+tree <- read.tree(text = "(,(,));")
+plot(tree)
+nodelabels()
+tiplabels()
+str(tree)
+```
 The storage mode is important. Saving a vector of integers saves memory in comparison to vector of doubles. 
 Also objects of class `phylo` often in C-Code so you need to take care of this. 
 
@@ -78,11 +129,15 @@ y <- sqrt(3)^2
 x==y
 ```
 
-In the edge matrix each edge (branch) is coded by the nodes it connects. Tips (terminal nodes, leaves, labels, ...) are numbered from 1 to `n`, where `n` is the number of tips. The root is numbered `n+1`. The ancestral node (closer to the root) is always on the lefthand column.    
+In the edge matrix each edge (branch) is coded by the nodes it connects. 
+```{r}
+tree$edge
+```
+Tips (terminal nodes, leaves, labels, ...) are numbered from 1 to `n`, where `n` is the number of tips. The root is numbered `n+1`. The ancestral node (closer to the root) is always on the lefthand column.    
 
 Some important properties and observations:
 * the first column only contains values greater than `n`.
-* all nodes, s the root, appear exactly once in the second column. 
+* all nodes, but the root, appear exactly once in the second column. 
 * in a strictly bifurcating tree, all nodes greater then `n` appear twice and the root node `n+1`, in case of 'twice' for rooted and `trice` for unrooted trees. 
 
 So we can start and construct a minimal tree ourselves:
@@ -106,6 +161,7 @@ Additionally most `phylo` objects have an attribute `order`, which can be either
 ## Tree traversal
 
 Tree traversal in ape is implemented iterative in contrast to the recursive implementation in most other phylogenetic programs. 
+
 ### Preorder tree traversal
 *Preorder tree traversal* is travelling through the tree from the root to the tips visiting always the all nodes the right subtree before visiting the right subtree.  
 
@@ -129,16 +185,6 @@ reorder(tree, "postorder")$edge
 
 Defining the order of the traversal of the tree this way allows to iterate just through the tree. Reorder not only changes the order of the `edge` matrix, but also of the `edge.length` if it exists. 
 
-### Convenience functions
-There are several convenience functions to achieve common tasks:
-
-| Operation      | High level       | Low level      |
-|--------------- | -----------------|----------------|  
-| How many tips? | Ntip(tr) | length(tr\$tip.label) |
-| How many node? | Nnode(tr)  | tr\$Nnode |
-| How many edges? | Nedge(tr) | nrow(tr\$edge) |
-| What are the ancestor of x | Ancestors(tr, x, "parent") | tr\$edge[tr\$edge[,2]==x , 1] |
-| What are the descendants of x | Descendants(tr, x, "children") | tr\$edge[tr\$edge[,1]==x , 2] |
 
 ###Excercise 1:
 Write a function which counts how many descendants each node has. 
@@ -220,10 +266,81 @@ object.size(trees) / object.size(trees_compact)
 
 Switching between the two representations can be done via '.compressTipLabel' and '.uncompressTipLabel'. 
 
+## Importing and exporting trees and networks
+
+Package `ape` and `phangorn` contains functions to import trees and splits
+networks: 
+
+* `read.tree` Newick files 
+* `read.nexus` NEXUS files (only trees)
+* `read.evonet` networks in extended Newick format
+* `read.networx` phylogenetic splits networks in nexus format (Splitstree)
+
+and 
+
+* `write.tree` Newick (one or several trees)
+* `write.nexus` NEXUS (one or several trees with or without translate block)
+* `write.evonet` extended Newick (.nhx)
+* `read.networx` phylogenetic splits networks in nexus format (e.g. Splitstree)
+
+
+Any R object(s) can be saved on disk: this is much better if these data are used
+only in R. (*Faster to read/write, smaller files, and no loss of numerical accuracy.)
+Several objects:
+
+* `save(X, a, y, file = "X.rda")` several objects with their names
+* `load("X.rda")` $\rightarrow$ restores object names (i.e., possibly deletes previous
+X, a, y in the workspace)
+A single object:
+
+* `saveRDS(X, file = "X.rds")`
+* `Y <- readRDS("X.rds")` $\rightarrow$ the name of the object can be changed
+
+
+## Functions for `phylo` objects
+
+Before you write a function look what's already out there. 
+
+### Some convenience functions
+There are several convenience functions to achieve common tasks:
+
+| Operation      | High level       | Low level      |
+|--------------- | -----------------|----------------|  
+| How many tips? | Ntip(tr) | length(tr\$tip.label) |
+| How many node? | Nnode(tr)  | tr\$Nnode |
+| How many edges? | Nedge(tr) | nrow(tr\$edge) |
+| What are the ancestor of x | Ancestors(tr, x, "parent") | tr\$edge[tr\$edge[,2]==x , 1] |
+| What are the descendants of x | Descendants(tr, x, "children") | tr\$edge[tr\$edge[,1]==x , 2] |
+
+
+Ntip, Nnode, Nedge are generic and work on `phylo` and `multiPhylo` objects. `Ancestors` and `Descendants` are vectorized , i.e. argument node can be a vector. 
+
+
+## Some useful functions to modify trees
+`root(phy, outgroup, ...)`, 
+`unroot(phy)`, 
+`midpoint(tree)`,
+`drop.tip(phy, tip, ...)`, 
+`keep.tip(phy, tip)`, 
+`extract.clade(phy, node, ...)`, 
+`bind.tree(x, y, ...)`,
+`c(...)`, 
+`multi2di(phy, random = TRUE)`, 
+`di2multi(phy, tol = 1e-8)`, 
+`rotate(phy, node)`, 
+`rotateConstr(phy, X)`, 
+`reorder(phy, order = "cladewise")`
+
+Some of the above functions have the option interactive (FALSE by default) and many are generic.
+
+And some functions to explore the Baumraum (tree space)
+`nni`, `rNNI`, `rSPR`, `allTrees`. 
+
+
+
 ## networx class
 
-The networx class is build up on `phylo` to allow to store (undirected) 
-phylogenetic networx. I may will go into more detail later the week. 
+The networx class is build up on `phylo` to allow to store (undirected) phylogenetic networx. I may will go into more detail later the week. 
 
 
 ```{r}
@@ -232,14 +349,8 @@ phangorn:::allCircularSplits(6) %>% as.networx %>% plot(type="2D")
 ```
 
 
-## phyDat
 
-`phyDat` is the main data class in `phangorn` to store aligned discrete data. This can be binary, nucleotide, protein, codon, morphological of dicrete data. 
-The data format is very similar to the internal forma of a `factor` variable in R.
-The data are stored as vectors integers in a list with as many vectors as sequences. 
-
-The phyDat format has the following attributes. 
-*weight*
+Special thanks to Emmanuel Paradis for sharing some lecture notes! 
 
 Paradis E. (2012) Definition of Formats for Coding Phylogenetic Trees in R [url](http://ape-package.ird.fr/misc/FormatTreeR_24Oct2012.pdf)
 
