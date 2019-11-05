@@ -66,7 +66,7 @@
     <h1 class="article-title">Tree structure</h1>
 
     
-    <span class="article-date">0001-01-01</span>
+    <span class="article-date">2019-10-27</span>
     
 
     <div class="article-content">
@@ -199,28 +199,28 @@ tiplabels()</code></pre>
 <p><img src="../post/Tree_structure_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <pre class="r fold-show"><code>reorder(tree, &quot;cladewise&quot;)$edge
 ##      [,1] [,2]
-## [1,]    6    7
-## [2,]    7    8
-## [3,]    8    1
-## [4,]    8    2
-## [5,]    7    3
-## [6,]    6    9
-## [7,]    9    4
-## [8,]    9    5</code></pre>
+## [1,]    6    1
+## [2,]    6    7
+## [3,]    7    8
+## [4,]    8    9
+## [5,]    9    2
+## [6,]    9    3
+## [7,]    8    4
+## [8,]    7    5</code></pre>
 </div>
 <div id="postorder-tree-traversal" class="section level3">
 <h3>Postorder tree traversal</h3>
 <p><em>Postorder tree traversal</em> travels through the tree from the tips through the root. All the descendent nodes need to be visited before the ancestral node.</p>
 <pre class="r fold-show"><code>reorder(tree, &quot;postorder&quot;)$edge
 ##      [,1] [,2]
-## [1,]    9    4
-## [2,]    9    5
-## [3,]    8    1
-## [4,]    8    2
+## [1,]    9    2
+## [2,]    9    3
+## [3,]    8    9
+## [4,]    8    4
 ## [5,]    7    8
-## [6,]    7    3
-## [7,]    6    7
-## [8,]    6    9</code></pre>
+## [6,]    7    5
+## [7,]    6    1
+## [8,]    6    7</code></pre>
 <p>Defining the order of the traversal of the tree this way allows to iterate just through the tree. Reorder not only changes the order of the <code>edge</code> matrix, but also of the <code>edge.length</code> if it exists.</p>
 <p>###Excercise 1:
 Write a function which counts how many descendants each node has.
