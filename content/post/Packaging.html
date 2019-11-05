@@ -20,7 +20,8 @@ output: html_document
 </div>
 <div id="rstudio-and-integrated-tools-for-package-building" class="section level2">
 <h2>RStudio and integrated tools for package building</h2>
-<p>File &gt; New Project &gt; R Package</p>
+<p>blogo
+File &gt; New Project &gt; R Package</p>
 <p>Choose to initialize a revision management repository with the package.</p>
 <p>When we do this in RStudio, R initializes a package. It was several components:</p>
 <ul>
@@ -76,6 +77,13 @@ test_that(&quot;Test square_calc()&quot;, {
        assert_that(sqrt(area) == side_length)
        return(area)
    }</code></pre>
+<p>We can also write our own error messages. Try the below with both object types:</p>
+<pre class="r"><code>tree &lt;- phytools::pbtree(n = 10)
+t &lt;- c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;)
+
+if (!inherits(ENTER HERE, &quot;phylo&quot;)){
+    stop(&quot;tree must be of class &#39;phylo&#39;&quot;)
+  }</code></pre>
 </div>
 </div>
 <div id="getting-help-with-packages" class="section level2">

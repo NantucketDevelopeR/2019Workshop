@@ -20,7 +20,7 @@ We're all busy, stressed-out people. Why should we put in the effort to package 
 - Collaboration: You are your most common collaborator. Who remembers what they had for breakfast? Documentation is a love letter to yourself. Whether it's for you to remember what you did, or so you don't get an email when a stressed-out grad student finds your package, using a standard infrastructure means people can find what they need.
 
 ## RStudio and integrated tools for package building
-
+blogo
 File > New Project > R Package
 
 Choose to initialize a revision management repository with the package.
@@ -102,6 +102,18 @@ library(assertthat)
    }
 ```
 
+We can also write our own error messages. Try the below with both object types:
+
+```{r, eval = FALSE}
+
+tree <- phytools::pbtree(n = 10)
+t <- c("a", "b", "c")
+
+if (!inherits(ENTER HERE, "phylo")){
+    stop("tree must be of class 'phylo'")
+  }
+
+```
 
 ## Getting Help with Packages
 
