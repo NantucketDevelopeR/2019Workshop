@@ -1,0 +1,224 @@
+---
+title: "Functional Programming in R"
+output: html_notebook
+---
+
+This is a quick tutorial on functional programming in R with respect to phylogenetics. I am using the functional programming definitions available [here](http://adv-r.had.co.nz/Functional-programming.html), which is a good resource for further information. We will discuss some tricks to make your phylogenetics applications more efficient and flexible in R. 
+
+## Motivating Example
+You may have noticed that some packages fit models in different ways. Let's compare two ways of fitting a birth-death model, one in the R package `diversitree` and one in `ape`.
+
+```{r}
+library(diversitree)
+library(ape)
+## Make the tree
+set.seed(2)
+phy <- tree.bd(c(.1, .03), max.taxa=100)
+
+## Fit with diversitree
+lik <- make.bd(phy)
+fit_diversitree <- find.mle(lik, c(.1, .03), method="subplex")
+fit_diversitree$par
+
+## Fit with ape
+fit_ape <- birthdeath(phy)
+fit_ape$para
+```
+
+They give the answer in different parameterizations, but you can prove to yourself that they're roughly the same. Which one is better? Well, `ape` has only one line of code, while `diversitree` took two! Why bother with the two steps? The answer is the flexibility afforded by functional programming. 
+
+```{r}
+## Take the same likelihood from diversitree and fit it with MCMC
+mcmc_diversitree <- mcmc(lik, c(0.1,0.03), 100, w=0.1, print.every=10)
+summary(mcmc_diversitree)
+
+## Use a different function than find.mle in diversitree
+fit_optim <- optim(c(0.1, 0.03), lik, control=list(fnscale = -1))
+fit_optim
+## diversitree also sends likelihood functions to ancestral state reconstructions for trait models
+```
+
+Diversitree uses the same `mcmc` and `find.mle` function, regardless of what type of model is made and fit. This drastically cuts down on the number of lines of code needed to run various models, and makes the program much more robust than recoding a new function that does it all in one step every time. Plus, you can add new `make.my_new_model` functions later that don't break your code. 
+
+## Anonymous functions
+
+Functions in R are just like other objects, and can be assigned to a variable for later use. When you don't think you'll ever use the function again, you can skip that step and simply use a function without assigning it! Check it out: 
+
+```{r}
+(function(x) paste0("My anonymous function says: ", x))(x="What?")
+```
+
+This doesn't look pretty, and I don't recommend you do this. But it simply shows that you don't have to name a function to use it. This comes in handy for the `apply` family of functions, as we're often faced with trivial tasks that we don't care to make a function for. 
+
+For example, here's something that happens to me a lot. I want to fit 3 models using `fitContinuous`, but I want to do it in a streamlined way. So I use `lapply`:
+
+```{r}
+library(treeplyr)
+library(geiger)
+data(anolis)
+anolis <- make.treedata(anolis$phy, anolis$dat)
+models <- c("BM", "OU", "lambda")
+fits <- lapply(models, fitContinuous, phy=anolis$phy, dat=anolis[['SVL']], SE=0)
+fits
+```
+
+Now all my results are locked away in a list. I could go get what I want, one by one. For example, if I want the AIC values for each fit to make a pretty table. 
+
+```{r}
+setNames(c(fits[[1]]$opt$aic, fits[[2]]$opt$aic, fits[[3]]$opt$aic), models)
+```
+
+Not great though right? If we had fit 20 models, the script above would be really tedious. We could use `sapply`, and define a new function, `aic_getter`:
+
+```{r}
+aic_getter <- function(x) x$opt$aic
+aics <- sapply(fits, aic_getter)
+setNames(aics, models)
+```
+
+But who am I kidding, am I going to ever use `aic_getter` again? Is it worth it to make this function? Sometimes it's just easier to use it as an anonymous function in a single step, since we will likely never need `aic_getter` again. 
+
+```{r}
+names(fits) <- models
+sapply(fits, function(x) x$opt$aic)
+```
+
+This is really useful if you just need an on-the-fly function that isn't worth making into an object. Note that anonymous functions are really hard to read if they get long and complicated, so try not to make them longer than 1 line. You can, but probably shouldn't, use {} and semicolons to make multi-line anonymous functions. 
+
+## Closures
+
+Functions can also make functions, which are called "closures". These are anonymous functions that are returned by other functions. 
+
+```{r}
+power <- function(exponent) {
+  function(x) {
+    x ^ exponent
+  }
+}
+
+```
+
+```{r}
+square <- power(2)
+square(2)
+square(3)
+```
+
+```{r}
+cube <- power(3)
+cube(2)
+cube(3)
+```
+One problem with this is that we don't see what the function does very clearly from printing the function. Both functions used the same `x ^ exponent`. Instead, the difference is that in the environment of the function when the closure was made, the exponent was either 2 or 3. We can see this here:
+
+```{r}
+square
+cube ## Both are the same function
+```
+
+```{r}
+as.list(environment(square))
+as.list(environment(cube))
+```
+
+In other words, the function is made with its environment coinciding with the function environment it was created in. This is really useful for making flexible functions that respond to user input. 
+
+Functions can also be made into lists of functions. For example: 
+
+```{r}
+powerFns <- lapply(1:10, power)
+names(powerFns) <- paste0("powerExp", 1:10)
+powerFns$powerExp10(2)
+sapply(powerFns, function(x) x(2))
+```
+
+
+
+## Exercise: Making a function lets users specify priors
+
+Suppose you want to make a prior function for 3 parameters (a, b, c) with different distributions, how will you do it? Well you could do the following:
+
+```{r}
+prior <- function(x){
+  lnP <- dnorm(x[1], 0, 1, log=TRUE) + dnorm(x[2], 0, 10, log=TRUE) + dnorm(x[3], 0, 100, log=TRUE)
+  return(lnP)
+}
+prior(c(0, 3, 10))
+```
+
+But what if a user wants to modify the distributions? Or use a different distribution than a normal distribution? What can you do to make it more flexible?
+
+```{r}
+make.prior <- function(fns, pars){
+  prior <- function(x) fns[[1]](x[1], pars[[1]][1], pars[[1]][2], log=TRUE) + fns[[2]](x[2], pars[[2]][1], pars[[2]][2], log=TRUE) + fns[[3]](x[3], pars[[3]][1], pars[[3]][2], log=TRUE)
+  return(prior)
+}
+
+```
+
+Now let's test it out.
+
+```{r}
+fns <- list(A=dnorm, B=dnorm, C=dnorm)
+pars <- list(A=c(mean=0, sd=1), B=c(mean=0, sd=10), C=c(mean=0, sd=100))
+prior <- make.prior(fns, pars)
+prior(c(0,3,10))
+```
+
+Yay! We get the same answer. But now try changing one of the functions to an exponential distribution, `dexp`: 
+
+```{r}
+fns <- list(A=dnorm, B=dnorm, C=dexp)
+pars <- list(A=c(mean=0, sd=1), B=c(mean=0, sd=10), C=c(rate=1))
+prior <- make.prior(fns, pars)
+try(prior(c(0,3,10)))
+```
+
+It breaks because the exponential distribution has only 1 parameter, and our code asks for 2. Also, what if we want to add a fourth parameter? Do we need to rewrite the function every time? 
+
+Here's one way we could maybe make an more elegant solution. We can make use of what are called `formals`. 
+```{r}
+formals(dnorm)
+```
+
+Notice that we see the default values of the formal arguments `$mean`=0 and `$sd`=1. Guess what, we can change these (PS, this is kind of scary):
+
+```{r}
+formals(dnorm)$sd <- 10
+formals(dnorm)
+```
+
+While we wouldn't want to do this in the global environment, messing with formals inside a function ensures that it only modifies the functions _within the scope of the function_, and not in the global environment. 
+
+```{r}
+make.prior <- function(fns, pars){
+  ## Fill this in
+  return(prior)
+}
+
+fns <- list(A=dnorm, B=dnorm, C=dexp)
+pars <- list(A=list(mean=0, sd=1), B=list(mean=0, sd=10), C=list(rate=1))
+prior <- make.prior(fns, pars)
+prior(c(0,3,10)) #-14.18546
+```
+
+Challenge, now make it work for an arbitrary number of parameters (e.g. 4 parameters as shown below).
+
+```{r}
+make.prior <- function(fns, pars){
+  ## Fill this in
+  return(prior)
+}
+
+fns <- list(A=dnorm, B=dnorm, C=dlnorm, D=dunif)
+pars <- list(A=list(mean=0, sd=1), B=list(mean=0, sd=10), C=list(meanlog=0, sdlog=1), D=list(min=0, max=10))
+prior <- make.prior(fns, pars)
+prior(c(0,3,10,5))  #-12.36052
+prior(c(0,3,10,11)) #-Inf since 11 > than max=10 for D.
+```
+
+Notice that we can see all the details of the prior function using the `environment` function again:
+
+```{r}
+as.list(environment(prior))
+```
