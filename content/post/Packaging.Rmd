@@ -115,6 +115,20 @@ if (!inherits(ENTER HERE, "phylo")){
 
 ```
 
+
+## Documentation
+
+Go ahead and open up the .R file for one of your two functions. We'll now add some documentation. That typically takes this format:
+
+```
+#' Short description of what the function does.
+#'
+#' Longer description of what a function does. Do you need certain inputs? Specify them here. Do you #' calculate the likelihood of data given a specific formulation of a model? Let people know which #' here!
+#' 
+#' @param Inputs to function
+#' @export 
+```
+
 ## Getting Help with Packages
 
 One of the trickiest things about package development is a lot of the help we get as novices sort of falls away.

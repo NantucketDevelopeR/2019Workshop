@@ -1,76 +1,45 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Hugo 0.55.6" />
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width">
+		
 
+		<title>Packaging R Code</title>
 
-<title>Packaging R Code - A Hugo website</title>
-<meta property="og:title" content="Packaging R Code - A Hugo website">
+		
+		<link rel="stylesheet" href="https://nantucketdeveloper.github.io/2019Workshop/css/colors-dark.min.217a2547e8e6c808986d22ef70b50263c2d6a4bbc80ed42e97e280a41103f9b5.css">
 
+		
+	</head>
+	<body>
+		<header id="header">
+			<h1><a href="https://nantucketdeveloper.github.io/2019Workshop/">Nantucket Phylogenetic DevelopRs</a></h1>
+			<p>Lecture materials for the 2019 Nantucket Phylogenetic Methods DevelopR workshop.</p>
+		</header>
 
-  <link href='https://nantucketdeveloper.github.io/2019Workshop/favicon.ico' rel='icon' type='image/x-icon'/>
-
-
-
-  
-
-
-
-
-
-
-
-
-<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
-
-
-
-<link rel="stylesheet" href="../css/fonts.css" media="all">
-<link rel="stylesheet" href="../css/main.css" media="all">
-
-
-
-  </head>
-  <body>
-    <div class="wrapper">
-      <header class="header">
-        <nav class="nav">
-  <a href="../" class="nav-logo">
-    <img src="../images/logo.png"
-         width="50"
-         height="50"
-         alt="Logo">
-  </a>
-
-  <ul class="nav-links">
-    
-    <li><a href="../about/">About</a></li>
-    
-    <li><a href="https://github.com/NantucketDevelopeR/2019Workshop/tree/master/lectureMaterials">GitHub</a></li>
-    
-  </ul>
+		<div id="page">
+			<div id="sidebar">
+				<nav>
+	
+		<ul class="nav">
+			
+				<li><a href="../about/"><span>About</span></a></li>
+			
+				<li><a href="https://github.com/NantucketDevelopeR/2019Workshop/"><span>GitHub</span></a></li>
+			
+		</ul>
+	
 </nav>
 
-      </header>
+			</div>
 
+			<div id="content">
+				
+	<article class="post">
+		<h1><a href="https://nantucketdeveloper.github.io/2019Workshop/packaging-r-code/">Packaging R Code</a> </h1>
 
-<main class="content" role="main">
-
-  <article class="article">
-    
-    <span class="article-duration">5 min read</span>
-    
-
-    <h1 class="article-title">Packaging R Code</h1>
-
-    
-    <span class="article-date">2019-10-26</span>
-    
-
-    <div class="article-content">
-      
+		<div class="post-content">
 
 
 <div id="schedule" class="section level1">
@@ -152,6 +121,16 @@ if (!inherits(ENTER HERE, &quot;phylo&quot;)){
   }</code></pre>
 </div>
 </div>
+<div id="documentation" class="section level2">
+<h2>Documentation</h2>
+<p>Go ahead and open up the .R file for one of your two functions. We’ll now add some documentation. That typically takes this format:</p>
+<pre><code>#&#39; Short description of what the function does.
+#&#39;
+#&#39; Longer description of what a function does. Do you need certain inputs? Specify them here. Do you #&#39; calculate the likelihood of data given a specific formulation of a model? Let people know which #&#39; here!
+#&#39; 
+#&#39; @param Inputs to function
+#&#39; @export </code></pre>
+</div>
 <div id="getting-help-with-packages" class="section level2">
 <h2>Getting Help with Packages</h2>
 <p>One of the trickiest things about package development is a lot of the help we get as novices sort of falls away.</p>
@@ -159,44 +138,23 @@ if (!inherits(ENTER HERE, &quot;phylo&quot;)){
 They also operate a <a href="https://discuss.ropensci.org/">forum</a> for developers, users, and other people who dig software, I guess? The culture of it is very collegial.</p>
 </div>
 </div>
+</div>
 
-    </div>
-  </article>
+		<p class="meta">Posted on <span class="postdate">26. October 2019</span></p>
+	</article>
 
-  
+			</div>
 
+			<footer id="footer">
+				<p class="copyright">
+					
+						Powered by <a href="https://gohugo.io/">Hugo</a> and the
+						<a href="https://github.com/bake/solar-theme-hugo">Solar</a>-theme.
+					
+				</p>
+			</footer>
+		</div>
 
-</main>
-
-      <footer class="footer">
-        <ul class="footer-links">
-          <li>
-            <a href="../index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
-          </li>
-          <li>
-            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="../images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
-          </li>
-        </ul>
-      </footer>
-
-    </div>
-    
-
-
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-
-
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
-<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
-
-
-
-    
-
-    
-  </body>
+		
+	</body>
 </html>
-
