@@ -1,0 +1,381 @@
+---
+title: "From mindful programming to reproducible research"
+author: "Claudia Solis-Lemus"
+date: "2019-11-2"
+output:
+  html_document:
+    keep_md: true
+---
+
+
+
+<p>This website tries to highlight key practices in programming and reproducibility. I am doing a shameless copy of better and more complete tutorials like:</p>
+<ul>
+<li>Cecile Ane’s class on <a href="https://github.com/cecileane/computingtools">Computing Tools</a></li>
+<li>Jenny Bryan’s <a href="https://happygitwithr.com/">Happy git with R</a></li>
+<li>Karl Broman’s class on <a href="http://kbroman.org/Tools4RR/">Tools for Reproducible Research</a></li>
+<li>UW-Madison <a href="https://uw-madison-datascience.github.io/2019-06-13-uwmadison-swc/">software carpentry</a></li>
+</ul>
+<p>So, make sure to check these resources too.</p>
+<p>The original repo for this notes is <a href="https://github.com/crsl4/mindful-programming">mindful-programming</a> where I will keep updating these notes.</p>
+<div id="why-do-we-care-about-best-practices-and-reproducibility" class="section level1">
+<h1>0. Why do we care about best practices and reproducibility?</h1>
+<ul>
+<li><em>Your closest collaborator is you six months ago, and you do not reply to emails</em> – Karl Broman</li>
+<li>Everything via code -&gt; avoid embarrassment, save time, avoid mistakes</li>
+<li><em>The most important tool is the mindset, when starting, that the end product will be reproducible</em> – Keith Baggerly</li>
+<li>Assume that everything that you are doing right now will need to be redone at some point in the future: be prepared</li>
+</ul>
+</div>
+<div id="best-computing-practices" class="section level1">
+<h1>1. Best computing practices</h1>
+<p>See <a href="https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1001745">Wilson, et al 2014</a></p>
+<ol style="list-style-type: decimal">
+<li>Write programs for people, not computers</li>
+<li>Let the computer do the work (functions, scripts)</li>
+<li>Make incremental changes (use version control)</li>
+<li>Don’t repeat yourself (or others): no copy-paste!</li>
+<li>Plan for mistakes (add assersions to programs, code defensively)</li>
+<li>Optimize software only after it works correctly</li>
+<li>Document design and purpose, not mechanics</li>
+<li>Collaborate (github pull requests/issues)</li>
+</ol>
+<div id="organization-of-projects" class="section level2">
+<h2>1.1 Organization of projects</h2>
+<p>This section is inspired by Karl Broman’s notes.</p>
+<p><img src="http://www.phdcomics.com/comics/archive/phd052810s.gif" /></p>
+<ul>
+<li>Put everything in a common directory. If using RStudio, for example, create a new project which will contain all the files corresponding to this project. You can link this project to a github repository (see below)</li>
+<li>Separate raw from processed data; it is tempting to hand-edit datafiles: <strong>don’t!</strong></li>
+<li>Separate code from data</li>
+<li>Don’t use absolute paths</li>
+<li>Use readme and markdown (<code>md</code>) files to explain structure of folder and files within folder/subfolders; create logfiles as a “Dear diary” with details of analyses. See this <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">Markdown cheatsheet</a></li>
+<li>Use R Markdown (<code>Rmd</code>) files for data analyses and reports. See this <a href="https://bookdown.org/yihui/rmarkdown/">R Markdown tutorial</a></li>
+<li>Slow down and think about file/folder organization</li>
+</ul>
+</div>
+<div id="write-clear-code" class="section level2">
+<h2>1.2 Write clear code</h2>
+<p>This section is inspired by Karl Broman’s notes.</p>
+<p><img src="https://geekandpoke.typepad.com/geekandpoke/images/2008/02/04/aop1b.jpg" /></p>
+<ul>
+<li>First code that works, then efficiency</li>
+<li>Readable for humans; code format: indentation, white space, meaningful names</li>
+<li>Modular, reusable (no copy-paste of lines: functions)</li>
+<li>Write general code (not specific to data/situation at hand)</li>
+<li>No global variables ever!</li>
+<li>Comment code but mostly big picture, major sections, input/output, not minor details that can be understood from the code itself; “plan to spend 1/4 time commenting”, Karl Broman</li>
+<li>Meaningful error messages; tests/checks for inputs; document assumptions on input
+<ul>
+<li>Statistician: rows=individuals, columns=variables</li>
+<li>Machine learning guy: rows=variables, columns=individuals</li>
+</ul></li>
+<li>Code defensively; handle cases that “can’t happen”</li>
+<li>Slow down, breathe, don’t be in a hurry!</li>
+</ul>
+</div>
+<div id="version-control-with-git" class="section level2">
+<h2>1.3 Version control with git</h2>
+<div id="why-version-control-with-gitgithub" class="section level3">
+<h3>1.3.1 Why version control with git/github?</h3>
+<p><img src="http://www.phdcomics.com/comics/archive/phd101212s.gif" /></p>
+<ul>
+<li>Keep track of history of changes of files in your project</li>
+<li>Time travel: access to files from the past</li>
+<li>Peace of mind about breaking stuff:</li>
+</ul>
+<p><em>Using a Git commit is like using anchors and other protection when climbing. If you’re crossing a dangerous rock face you want to make sure you’ve used protection to catch you if you fall. Commits play a similar role: if you make a mistake, you can’t fall past the previous commit. Coding without commits is like free-climbing: you can travel much faster in the short-term, but in the long-term the chances of catastrophic failure are high! Like rock climbing protection, you want to be judicious in your use of commits. Committing too frequently will slow your progress; use more commits when you’re in uncertain or dangerous territory. Commits are also helpful to others, because they show your journey, not just the destination</em> – Hadley Wickham</p>
+<ul>
+<li>Collaborating with others</li>
+<li>See what a github repo <a href="https://github.com/crsl4/PhyloNetworks.jl">looks like</a></li>
+<li>More reading: <a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007142">PLoS Comp Bio</a></li>
+</ul>
+</div>
+<div id="setting-everything-up" class="section level3">
+<h3>1.3.2 Setting everything up</h3>
+<ul>
+<li>Register for github account <a href="https://happygitwithr.com/github-acct.html">here</a>; Think carefully about your username!</li>
+<li>Install/update R and RStudio <a href="https://happygitwithr.com/install-r-rstudio.html">here</a></li>
+<li>Install <a href="https://happygitwithr.com/install-git.html">git</a></li>
+<li>Configuration of git <a href="https://happygitwithr.com/hello-git.html">here</a></li>
+</ul>
+</div>
+<div id="now-you-want-to-start-your-project-git-basics" class="section level3">
+<h3>1.3.4 Now, you want to start your project: git basics</h3>
+<p>When you are starting your project, you basically need to create the local folder, the github repository and the RStudio project. The order of these steps can vary, but I have found that the more straight-forward order is the following:</p>
+<ol style="list-style-type: decimal">
+<li>Create a github repository</li>
+<li>Git clone the github repository into a local folder in your computer</li>
+<li>Make it an RStudio project (optional, mostly for R projects)</li>
+<li>Make local changes, git add, git commit, git push</li>
+</ol>
+<div id="create-a-github-repository" class="section level5">
+<h5>1. Create a github repository</h5>
+<ul>
+<li>Click the green “New” button.</li>
+<li>Choose the repository name: <code>myProject</code></li>
+<li>Choose to make the repository public</li>
+<li>Choose “yes” to initialize this repository with a README file</li>
+</ul>
+</div>
+<div id="git-clone-in-a-local-folder" class="section level5">
+<h5>2. Git clone in a local folder</h5>
+<pre><code>pwd ## make sure you are in the right place
+git clone https://github.com/YOU/myProject.git</code></pre>
+<p>Here you substitute <code>YOU</code> with your github username.</p>
+</div>
+<div id="make-it-an-rstudio-project" class="section level5">
+<h5>3. Make it an RStudio project</h5>
+<p><code>File &gt; New Project &gt; Version Control &gt; Git</code> and copy <code>https://github.com/YOU/myProject.git</code></p>
+</div>
+<div id="make-local-changes" class="section level5">
+<h5>4. Make local changes:</h5>
+<pre><code>cd myProject
+open README.md</code></pre>
+<p>Change the file, then</p>
+<pre><code>git add .
+git commit -m &quot;updated readme&quot;
+git push</code></pre>
+</div>
+</div>
+<div id="other-useful-git-commands" class="section level3">
+<h3>1.3.5 Other useful git commands</h3>
+<pre><code>git status          ## check status of repo
+git log             ## log of commits
+git log --oneline
+git diff            ## compare versions
+git pull            ## pull commits from remote (github)
+git pull --ff-only  ## pull commits avoiding merge issues</code></pre>
+</div>
+<div id="creating-branches" class="section level3">
+<h3>1.3.6 Creating branches</h3>
+<p>The main branch is <code>master</code>. New branches are perfect for development of side work or to allow people working in parallel.</p>
+<p>Create a new branch:</p>
+<pre><code>git branch new-branch</code></pre>
+<p>Change to the new branch:</p>
+<pre><code>git checkout new-branch</code></pre>
+<p>Once in the new branch, you can make changes to the files, and these changes will only appear in the branch (not in <code>master</code>).</p>
+<p>Based on Karl Broman’s code, I changed my <code>.bash_profile</code> file to write the name of the branch where I am in the prompt.</p>
+<p><img src="images/prompt.png" /></p>
+<p>See more details in the <a href="https://github.com/crsl4/mindful-programming/blob/master/bash_profile.md">bash_profile.md file</a>.</p>
+<p>When you want to move to a different branch (or back to <code>master</code>),
+you should commit (or stash) your work in a branch:</p>
+<pre><code>git commit --all -m &quot;WIP&quot;
+git checkout master</code></pre>
+<p>When you move back to the new branch, perhaps you want to reset back to the previous commit. This command does not affect any of the files, only the commits:</p>
+<pre><code>git checkout new-branch
+git reset HEAD^</code></pre>
+<p>You can also choose to reset to a specific commit by typing <code>git log</code> first and choosing the specific SHA.</p>
+<p>After you’ve done work on a branch, and you are satisfied with the code, you can merge the changes to the <code>master</code> branch:</p>
+<pre><code>git checkout master
+git merge new-branch</code></pre>
+<p><strong>Merging issues?</strong> Do not panic! Breathe and keep in mind that your work is safe and secure by the power of git. <code>git status</code> helps you identify the problem.</p>
+<p>From Jenny Bryan’s website:</p>
+<pre><code>git status
+# On branch master
+# You have unmerged paths.
+#   (fix conflicts and run &quot;git commit&quot;)
+# 
+# Unmerged paths:
+#   (use &quot;git add &lt;file&gt;...&quot; to mark resolution)
+# 
+#     both modified:      index.html
+# 
+# no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&quot;)</code></pre>
+<p>The file <code>index.html</code> needs to be resolved. We can then open the file to see what lines are in conflict.</p>
+<pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD:index.html
+&lt;div id=&quot;footer&quot;&gt;contact : email.support@github.com&lt;/div&gt;
+=======
+&lt;div id=&quot;footer&quot;&gt;
+ please contact us at support@github.com
+&lt;/div&gt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; new-branch:index.html</code></pre>
+<p>In this conflict, the lines between <code>&lt;&lt;&lt;&lt;&lt;&lt; HEAD:index.html</code> and <code>======</code> are the content from the branch you are currently on. The lines between <code>=======</code> and <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; new-branch:index.html</code> are from the feature branch we are merging.</p>
+<p>To resolve the conflict, edit this section until it reflects the state you want in the merged result. Pick one version or the other or create a hybrid. Also remove the conflict markers <code>&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>======</code> and <code>&gt;&gt;&gt;&gt;&gt;&gt;</code>.</p>
+<pre><code>&lt;div id=&quot;footer&quot;&gt;
+please contact us at email.support@github.com
+&lt;/div&gt;</code></pre>
+<p>Now run <code>git add index.html</code> and <code>git commit</code> to finalize the merge.</p>
+<p>Keep in mind that you can always abort a merge with <code>git merge --abort</code>.</p>
+<p>Do you think you are prepared to tackle any branch problem? Try <a href="https://uw-madison-datascience.github.io/git-novice-custom/08-conflict/">this example</a></p>
+</div>
+<div id="forking-other-peoples-repository" class="section level3">
+<h3>1.3.7 Forking other people’s repository</h3>
+<p>Sometimes you identify a repository that does work that you are interested in, but perhaps you would like to do some modification.
+You can fork this repository, and work on the forked version as if it were your own repository (everything we’ve studied applies).</p>
+<div class="figure">
+<img src="https://happygitwithr.com/img/fork-and-clone.png" alt="" />
+<p class="caption">Image from Jenny Bryan</p>
+</div>
+<p>For this example (from Jenny Bryan’s website), the original repository is <code>OWNER/REPO</code>, and after clicking <code>Fork</code> on github, you will have a <code>YOU/REPO</code>.</p>
+<p>It is usually recommended to work on a branch when making changes to a forked repository. This is especially true if you intend to create a pull request (more below) so that the original owner can incorporate your changes to the original repository.</p>
+<p>You will then follow the same steps as in “Git basics”: git clone, work, git add, git commit, git push.</p>
+<p>If you look closely at your local repo, you will see that it points at your remote version of the repository:</p>
+<pre><code>$ git remote -v
+origin  https://github.com/YOU/REPO.git (fetch)
+origin  https://github.com/YOU/REPO.git (push)</code></pre>
+<p>which allows you to push/pull to this forked repository.</p>
+<p>But you will most likely also like to pull changes from the original repository</p>
+<div class="figure">
+<img src="https://happygitwithr.com/img/fork-triangle-happy.png" alt="" />
+<p class="caption">Image from Jenny Bryan</p>
+</div>
+<p>So, you can add the original repo <code>OWNER/REPO</code> as a remote in your repo:</p>
+<pre><code>git remote add upstream https://github.com/OWNER/REPO.git</code></pre>
+<p>Here we are choosing the name <code>upstream</code>, which is standard practice for the original repository.</p>
+<p>Then, when we check the remotes in your local repository, you can see that you have <code>origin</code> pointing at your own forked version <code>YOU/REPO</code>, and <code>upstream</code> pointing at the original repo <code>OWNER/REPO</code>:</p>
+<pre><code>$ git remote -v
+origin    https://github.com/YOU/REPO.git (fetch)
+origin    https://github.com/YOU/REPO.git (push)
+upstream  https://github.com/OWNER/REPO.git (fetch)
+upstream  https://github.com/OWNER/REPO.git (push)</code></pre>
+<p>Now you can pull changes from <code>upstream</code> to keep your forked repo updated with the original repo:</p>
+<pre><code>git pull upstream master --ff-only</code></pre>
+<p>After you’ve done work in your fork, and are ready to create a pull request in github, see <a href="https://happygitwithr.com/pr-extend.html">here</a>.</p>
+</div>
+<div id="troubleshooting" class="section level3">
+<h3>1.3.8 Troubleshooting</h3>
+<div class="figure">
+<img src="https://imgs.xkcd.com/comics/git.png" alt="" />
+<p class="caption">Reference: xkcd</p>
+</div>
+<div id="amending-commits" class="section level4">
+<h4>1.3.8.1 Amending commits</h4>
+<p>You might want to do sequential progress with the code, but not necessarily have one commit per every single change. You can use <code>git commit --amend</code> to re-write specific commits.
+For example, you do some work, and then commit the changes as work-in-progress: <code>git commit -m "WIP"</code>. The history looks like <code>A -- B -- C -- WIP</code>.
+You make more changes, and want to re-write the previous commit (WIP): <code>git commit --amend --no-edit</code>. The history is the same <code>A -- B -- C -- WIP</code>, but now the changes in WIP correspond to the two previous commits.</p>
+<p>Continue working like this, until you are satisfied with the work:</p>
+<pre><code>git commit --amend -m &quot;awesome changes&quot;
+git push</code></pre>
+<p>Your history – and that on GitHub – look like this:</p>
+<pre><code>A -- B -- C -- D</code></pre>
+<p>There is only one clean beautiful commit <code>D</code>, but in fact, it is the combination of multiple tiny steps.</p>
+</div>
+<div id="resetting-back-to-previous-commits" class="section level4">
+<h4>1.3.8.2 Resetting back to previous commits</h4>
+<p>Imagine that you are working on some changes , but you keep getting errors, and problems, so you want to fall back to a previous stage of the code when everything worked fine.</p>
+<p>This is the history that you have, with <code>git commit -m "WIP"</code> being the last commit:</p>
+<pre><code>A -- B -- C -- WIP</code></pre>
+<p>To go back to the code before your <code>WIP</code> commit, you type:</p>
+<pre><code>git reset --hard</code></pre>
+<p>which is implicitly the same as</p>
+<pre><code>git reset --hard HEAD</code></pre>
+<p>which says: “reset my files to their state at the most recent commit”.</p>
+</div>
+<div id="git-pushpull-issues" class="section level4">
+<h4>1.3.8.3 Git push/pull issues</h4>
+<p>Imagine if two people are pushing changes to the same repository. You are working locally, but forget to do <code>git pull</code> before make any changes (or perhaps you and the other people are working at the exact same time and the other person pushes their changes before you). When you try to push your changes, you can’t, because your code has diverged from the remote code:</p>
+<pre><code>$ git push
+To https://github.com/YOU/REPO.git
+ ! [rejected]        master -&gt; master (fetch first)
+error: failed to push some refs to &#39;https://github.com/YOU/REPO.git&#39;
+hint: Updates were rejected because the remote contains work that you do
+hint: not have locally. This is usually caused by another repository pushing
+hint: to the same ref. You may want to first integrate the remote changes
+hint: (e.g., &#39;git pull ...&#39;) before pushing again.
+hint: See the &#39;Note about fast-forwards&#39; in &#39;git push --help&#39; for details.</code></pre>
+<p>In the abstract, this is the state on github:</p>
+<pre><code>A -- B -- C (on GitHub)</code></pre>
+<p>And this is your local state:</p>
+<pre><code>A -- B -- D (what you have)</code></pre>
+<p>The easiests thing is to do <code>git pull</code> and then work out the merging issues (like with branches):</p>
+<pre><code>$ git pull
+Auto-merging foo.R
+CONFLICT (content): Merge conflict in foo.R
+Automatic merge failed; fix conflicts and then commit the result.</code></pre>
+<p>You just have to go to <code>foo.R</code> and pick which version you want to keep of the merging conflict, then <code>git add</code> and <code>git commit</code>.</p>
+<p>After this, you get this history:</p>
+<pre><code>      Remote: A--B--C
+Local before: A--B--D
+Local after: A--B--D--(merge commit)
+                \_C_/</code></pre>
+<p>A more elegant way to handle these cases is with <code>git pull --rebase</code>:</p>
+<pre><code>$ git pull --rebase
+First, rewinding head to replay your work on top of it...
+Applying: Take max</code></pre>
+<p>We’ve achieved this:</p>
+<pre><code>      Remote: A--B--C
+Local before: A--B--D
+Local after: A--B--C--D</code></pre>
+<p>The bad news is that as with <code>git pull</code>, it is still possible to get merge conflicts with <code>git pull --rebase</code>, so you might need to merge conflicts anyway.
+You can always do <code>git rebase --abort</code> to back out.</p>
+</div>
+</div>
+<div id="practicing-with-git" class="section level3">
+<h3>1.3.9 Practicing with git</h3>
+<p>Try out the exercises in Jenny Bryan’s website:
+- <a href="https://happygitwithr.com/bingo.html">Bingo</a>
+- <a href="https://happygitwithr.com/burn.html">Burn</a>
+- <a href="https://happygitwithr.com/reset.html">Reset</a></p>
+</div>
+</div>
+<div id="testing-code" class="section level2">
+<h2>1.4 Testing code</h2>
+<p>This section is inspired by Karl Broman’s notes.</p>
+<p>You want to test your code, but more importantly, you want to continuously test your code as you introduce more changes (preferably automated testing).</p>
+<p>Different types of tests:</p>
+<ul>
+<li>Check inputs
+<ul>
+<li>Stop if the inputs aren’t as expected.</li>
+</ul></li>
+<li>Unit tests
+<ul>
+<li>For each small function: does it give the right results in specific cases?</li>
+</ul></li>
+<li>Integration tests
+<ul>
+<li>Check that larger multi-function tasks are working.</li>
+</ul></li>
+<li>Regression tests
+<ul>
+<li>Compare output to saved results, to check that things that worked continue working</li>
+</ul></li>
+</ul>
+<div id="check-inputs-with-r-package-assertthat" class="section level3">
+<h3>1.4.1 Check inputs with R package <code>assertthat</code></h3>
+<p>You are creating an R function <code>winsorize</code> that limits extreme values of a vector. You want to include some <code>assert_that</code> statements to make sure that the input arguments are what you expect:</p>
+<pre class="r"><code>#&#39; import assertthat
+winsorize &lt;-
+function(x, q=0.006)
+{
+if(all(is.na(x)) || is.null(x)) return(x)
+assert_that(is.numeric(x))
+assert_that(is.number(q), q&gt;=0, q&lt;=1)
+lohi &lt;- quantile(x, c(q, 1-q), na.rm=TRUE)
+if(diff(lohi) &lt; 0) lohi &lt;- rev(lohi)
+x[!is.na(x) &amp; x &lt; lohi[1]] &lt;- lohi[1]
+x[!is.na(x) &amp; x &gt; lohi[2]] &lt;- lohi[2]
+x
+}</code></pre>
+</div>
+<div id="unit-tests-with-r-package-testthat" class="section level3">
+<h3>1.4.2 Unit tests with R package <code>testthat</code></h3>
+<p>Now, you want to make sure that the <code>winsorize</code> function returns what it is supposed to:</p>
+<pre class="r"><code>test_that(&quot;winsorize works for small vectors&quot;, {
+x &lt;- c(2, 3, 7, 9, 6, NA, 5, 8, NA, 0, 4, 1, 10)
+result1 &lt;- c(2, 3, 7, 9, 6, NA, 5, 8, NA, 1, 4, 1, 9)
+result2 &lt;- c(2, 3, 7, 8, 6, NA, 5, 8, NA, 2, 4, 2, 8)
+expect_identical(winsorize(x, 0.1), result1)
+expect_identical(winsorize(x, 0.2), result2)
+})</code></pre>
+</div>
+<div id="integration-tests-in-tests-folder" class="section level3">
+<h3>1.4.3 Integration tests in <code>tests</code> folder</h3>
+<p>You can store test functions in the <code>tests</code> folder, for example, <code>tests/testthat.R</code>:</p>
+<pre class="r"><code>library(testthat)
+test_check(&quot;mypkg&quot;)</code></pre>
+</div>
+<div id="automated-testing" class="section level3">
+<h3>1.4.4 Automated testing</h3>
+<p>You can perform automated tests with <code>Codecov</code> within github. Learn more about <code>Codecov</code> <a href="https://codecov.io/">here</a>.</p>
+</div>
+</div>
+</div>
+<div id="relax" class="section level1">
+<h1>2. Relax</h1>
+<ul>
+<li>Enjoy the process, make mistakes (git will catch you), learn as you go</li>
+<li>Code with purpose, be present, be mindful</li>
+</ul>
+</div>

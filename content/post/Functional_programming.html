@@ -1,0 +1,382 @@
+---
+title: "Functional Programming in R"
+author: "Josef Uyeda"
+date: "2019-11-05"
+output: html_document
+---
+
+
+
+<p>This is a quick tutorial on functional programming in R with respect to phylogenetics. I am using the functional programming definitions available <a href="http://adv-r.had.co.nz/Functional-programming.html">here</a>, which is a good resource for further information. We will discuss some tricks to make your phylogenetics applications more efficient and flexible in R.</p>
+<div id="motivating-example" class="section level2">
+<h2>Motivating Example</h2>
+<p>You may have noticed that some packages fit models in different ways. Let’s compare two ways of fitting a birth-death model, one in the R package <code>diversitree</code> and one in <code>ape</code>.</p>
+<pre class="r"><code>library(diversitree)</code></pre>
+<pre><code>## Loading required package: ape</code></pre>
+<pre class="r"><code>library(ape)
+## Make the tree
+set.seed(2)
+phy &lt;- tree.bd(c(.1, .03), max.taxa=100)
+
+## Fit with diversitree
+lik &lt;- make.bd(phy)
+fit_diversitree &lt;- find.mle(lik, c(.1, .03), method=&quot;subplex&quot;)
+fit_diversitree$par</code></pre>
+<pre><code>##     lambda         mu 
+## 0.08716469 0.01231621</code></pre>
+<pre class="r"><code>## Fit with ape
+fit_ape &lt;- birthdeath(phy)
+fit_ape$para</code></pre>
+<pre><code>##       d/b       b-d 
+## 0.1419101 0.0748218</code></pre>
+<p>They give the answer in different parameterizations, but you can prove to yourself that they’re roughly the same. Which one is better? Well, <code>ape</code> has only one line of code, while <code>diversitree</code> took two! Why bother with the two steps? The answer is the flexibility afforded by functional programming.</p>
+<pre class="r"><code>## Take the same likelihood from diversitree and fit it with MCMC
+mcmc_diversitree &lt;- mcmc(lik, c(0.1,0.03), 100, w=0.1, print.every=10)</code></pre>
+<pre><code>## 10: {0.0930, 0.0045} -&gt; 14.11458
+## 20: {0.0892, 0.0214} -&gt; 14.70931
+## 30: {0.0830, 0.0057} -&gt; 14.77845
+## 40: {0.1305, 0.0915} -&gt; 11.64522
+## 50: {0.1030, 0.0389} -&gt; 14.41441
+## 60: {0.0848, 0.0202} -&gt; 14.47579
+## 70: {0.0786, 0.0162} -&gt; 13.96003
+## 80: {0.0896, 0.0079} -&gt; 14.64217
+## 90: {0.0845, 0.0058} -&gt; 14.78028
+## 100: {0.1064, 0.0364} -&gt; 14.29043</code></pre>
+<pre class="r"><code>summary(mcmc_diversitree)</code></pre>
+<pre><code>##        i              lambda              mu                  p         
+##  Min.   :  1.00   Min.   :0.06632   Min.   :0.0001294   Min.   : 8.638  
+##  1st Qu.: 25.75   1st Qu.:0.08525   1st Qu.:0.0120494   1st Qu.:13.957  
+##  Median : 50.50   Median :0.09319   Median :0.0226492   Median :14.424  
+##  Mean   : 50.50   Mean   :0.09527   Mean   :0.0262987   Mean   :14.058  
+##  3rd Qu.: 75.25   3rd Qu.:0.10253   3rd Qu.:0.0371644   3rd Qu.:14.647  
+##  Max.   :100.00   Max.   :0.13373   Max.   :0.1026696   Max.   :14.800</code></pre>
+<pre class="r"><code>## Use a different function than find.mle in diversitree
+fit_optim &lt;- optim(c(0.1, 0.03), lik, control=list(fnscale = -1))
+fit_optim</code></pre>
+<pre><code>## $par
+## [1] 0.08719640 0.01237997
+## 
+## $value
+## [1] 14.80924
+## 
+## $counts
+## function gradient 
+##       55       NA 
+## 
+## $convergence
+## [1] 0
+## 
+## $message
+## NULL</code></pre>
+<pre class="r"><code>## diversitree also sends likelihood functions to ancestral state reconstructions for trait models</code></pre>
+<p>Diversitree uses the same <code>mcmc</code> and <code>find.mle</code> function, regardless of what type of model is made and fit. This drastically cuts down on the number of lines of code needed to run various models, and makes the program much more robust than recoding a new function that does it all in one step every time. Plus, you can add new <code>make.my_new_model</code> functions later that don’t break your code.</p>
+</div>
+<div id="anonymous-functions" class="section level2">
+<h2>Anonymous functions</h2>
+<p>Functions in R are just like other objects, and can be assigned to a variable for later use. When you don’t think you’ll ever use the function again, you can skip that step and simply use a function without assigning it! Check it out:</p>
+<pre class="r"><code>(function(x) paste0(&quot;My anonymous function says: &quot;, x))(x=&quot;What?&quot;)</code></pre>
+<pre><code>## [1] &quot;My anonymous function says: What?&quot;</code></pre>
+<p>This doesn’t look pretty, and I don’t recommend you do this. But it simply shows that you don’t have to name a function to use it. This comes in handy for the <code>apply</code> family of functions, as we’re often faced with trivial tasks that we don’t care to make a function for.</p>
+<p>For example, here’s something that happens to me a lot. I want to fit 3 models using <code>fitContinuous</code>, but I want to do it in a streamlined way. So I use <code>lapply</code>:</p>
+<pre class="r"><code>library(treeplyr)</code></pre>
+<pre><code>## Loading required package: dplyr</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:diversitree&#39;:
+## 
+##     combine</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;geiger&#39;:
+##   method            from
+##   unique.multiPhylo ape</code></pre>
+<pre><code>## 
+## Attaching package: &#39;treeplyr&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     reorder</code></pre>
+<pre class="r"><code>library(geiger)
+data(anolis)
+anolis &lt;- make.treedata(anolis$phy, anolis$dat)
+models &lt;- c(&quot;BM&quot;, &quot;OU&quot;, &quot;lambda&quot;)
+fits &lt;- lapply(models, fitContinuous, phy=anolis$phy, dat=anolis[[&#39;SVL&#39;]], SE=0)</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): Parameter estimates appear at bounds:
+##  lambda</code></pre>
+<pre class="r"><code>fits</code></pre>
+<pre><code>## [[1]]
+## GEIGER-fitted comparative model of continuous data
+##  fitted &#39;BM&#39; model parameters:
+##  sigsq = 0.136160
+##  z0 = 4.065918
+## 
+##  model summary:
+##  log-likelihood = -4.700404
+##  AIC = 13.400807
+##  AICc = 13.524519
+##  free parameters = 2
+## 
+## Convergence diagnostics:
+##  optimization iterations = 100
+##  failed iterations = 0
+##  frequency of best fit = 1.00
+## 
+##  object summary:
+##  &#39;lik&#39; -- likelihood function
+##  &#39;bnd&#39; -- bounds for likelihood search
+##  &#39;res&#39; -- optimization iteration summary
+##  &#39;opt&#39; -- maximum likelihood parameter estimates
+## 
+## [[2]]
+## GEIGER-fitted comparative model of continuous data
+##  fitted &#39;OU&#39; model parameters:
+##  alpha = 0.000000
+##  sigsq = 0.136160
+##  z0 = 4.065918
+## 
+##  model summary:
+##  log-likelihood = -4.700404
+##  AIC = 15.400807
+##  AICc = 15.650807
+##  free parameters = 3
+## 
+## Convergence diagnostics:
+##  optimization iterations = 100
+##  failed iterations = 0
+##  frequency of best fit = 0.81
+## 
+##  object summary:
+##  &#39;lik&#39; -- likelihood function
+##  &#39;bnd&#39; -- bounds for likelihood search
+##  &#39;res&#39; -- optimization iteration summary
+##  &#39;opt&#39; -- maximum likelihood parameter estimates
+## 
+## [[3]]
+## GEIGER-fitted comparative model of continuous data
+##  fitted &#39;lambda&#39; model parameters:
+##  lambda = 1.000000
+##  sigsq = 0.136160
+##  z0 = 4.065918
+## 
+##  model summary:
+##  log-likelihood = -4.700404
+##  AIC = 15.400807
+##  AICc = 15.650807
+##  free parameters = 3
+## 
+## Convergence diagnostics:
+##  optimization iterations = 100
+##  failed iterations = 0
+##  frequency of best fit = 0.09
+## 
+##  object summary:
+##  &#39;lik&#39; -- likelihood function
+##  &#39;bnd&#39; -- bounds for likelihood search
+##  &#39;res&#39; -- optimization iteration summary
+##  &#39;opt&#39; -- maximum likelihood parameter estimates</code></pre>
+<p>Now all my results are locked away in a list. I could go get what I want, one by one. For example, if I want the AIC values for each fit to make a pretty table.</p>
+<pre class="r"><code>setNames(c(fits[[1]]$opt$aic, fits[[2]]$opt$aic, fits[[3]]$opt$aic), models)</code></pre>
+<pre><code>##       BM       OU   lambda 
+## 13.40081 15.40081 15.40081</code></pre>
+<p>Not great though right? If we had fit 20 models, the script above would be really tedious. We could use <code>sapply</code>, and define a new function, <code>aic_getter</code>:</p>
+<pre class="r"><code>aic_getter &lt;- function(x) x$opt$aic
+aics &lt;- sapply(fits, aic_getter)
+setNames(aics, models)</code></pre>
+<pre><code>##       BM       OU   lambda 
+## 13.40081 15.40081 15.40081</code></pre>
+<p>But who am I kidding, am I going to ever use <code>aic_getter</code> again? Is it worth it to make this function? Sometimes it’s just easier to use it as an anonymous function in a single step, since we will likely never need <code>aic_getter</code> again.</p>
+<pre class="r"><code>names(fits) &lt;- models
+sapply(fits, function(x) x$opt$aic)</code></pre>
+<pre><code>##       BM       OU   lambda 
+## 13.40081 15.40081 15.40081</code></pre>
+<p>This is really useful if you just need an on-the-fly function that isn’t worth making into an object. Note that anonymous functions are really hard to read if they get long and complicated, so try not to make them longer than 1 line. You can, but probably shouldn’t, use {} and semicolons to make multi-line anonymous functions.</p>
+</div>
+<div id="closures" class="section level2">
+<h2>Closures</h2>
+<p>Functions can also make functions, which are called “closures”. These are anonymous functions that are returned by other functions.</p>
+<pre class="r"><code>power &lt;- function(exponent) {
+  function(x) {
+    x ^ exponent
+  }
+}</code></pre>
+<pre class="r"><code>square &lt;- power(2)
+square(2)</code></pre>
+<pre><code>## [1] 4</code></pre>
+<pre class="r"><code>square(3)</code></pre>
+<pre><code>## [1] 9</code></pre>
+<pre class="r"><code>cube &lt;- power(3)
+cube(2)</code></pre>
+<pre><code>## [1] 8</code></pre>
+<pre class="r"><code>cube(3)</code></pre>
+<pre><code>## [1] 27</code></pre>
+<p>One problem with this is that we don’t see what the function does very clearly from printing the function. Both functions used the same <code>x ^ exponent</code>. Instead, the difference is that in the environment of the function when the closure was made, the exponent was either 2 or 3. We can see this here:</p>
+<pre class="r"><code>square</code></pre>
+<pre><code>## function(x) {
+##     x ^ exponent
+##   }
+## &lt;environment: 0x7f8f0feb7f90&gt;</code></pre>
+<pre class="r"><code>cube ## Both are the same function</code></pre>
+<pre><code>## function(x) {
+##     x ^ exponent
+##   }
+## &lt;bytecode: 0x7f8f150278f8&gt;
+## &lt;environment: 0x7f8f13708fe0&gt;</code></pre>
+<pre class="r"><code>as.list(environment(square))</code></pre>
+<pre><code>## $exponent
+## [1] 2</code></pre>
+<pre class="r"><code>as.list(environment(cube))</code></pre>
+<pre><code>## $exponent
+## [1] 3</code></pre>
+<p>In other words, the function is made with its environment coinciding with the function environment it was created in. This is really useful for making flexible functions that respond to user input.</p>
+<p>Functions can also be made into lists of functions. For example:</p>
+<pre class="r"><code>powerFns &lt;- lapply(1:10, power)
+names(powerFns) &lt;- paste0(&quot;powerExp&quot;, 1:10)
+powerFns$powerExp10(2)</code></pre>
+<pre><code>## [1] 1024</code></pre>
+<pre class="r"><code>sapply(powerFns, function(x) x(2))</code></pre>
+<pre><code>##  powerExp1  powerExp2  powerExp3  powerExp4  powerExp5  powerExp6  powerExp7 
+##          2          4          8         16         32         64        128 
+##  powerExp8  powerExp9 powerExp10 
+##        256        512       1024</code></pre>
+</div>
+<div id="exercise-1-make-an-s3-generic-function-to-print-a-more-useful-definition" class="section level2">
+<h2>Exercise 1: Make an S3 generic function to print a more useful definition</h2>
+<p>Let’s make use of classes. We are going to define a new class for our power function, let’s call it <code>powerFn</code>, and write a <code>print</code> method that gives us useful information.</p>
+<pre class="r"><code>power &lt;- function(exponent) {
+  fn &lt;- function(x) {
+    x ^ exponent
+  }
+  class(fn) &lt;- &quot;powerFn&quot;
+  return(fn)
+}
+cube &lt;- power(3)
+class(cube)</code></pre>
+<pre><code>## [1] &quot;powerFn&quot;</code></pre>
+<p>Now currently we have no methods for a powerFn, and it inherits the class “function”. Let’s define our print function:</p>
+<pre class="r"><code>print.powerFn &lt;- function(x, ...){
+ 
+}
+cube</code></pre>
+</div>
+<div id="exercise-2-making-a-function-lets-users-specify-priors" class="section level2">
+<h2>Exercise 2: Making a function lets users specify priors</h2>
+<p>Suppose you want to make a prior function for 3 parameters (a, b, c) with different distributions, how will you do it? Well you could do the following:</p>
+<pre class="r"><code>prior &lt;- function(x){
+  lnP &lt;- dnorm(x[1], 0, 1, log=TRUE) + dnorm(x[2], 0, 10, log=TRUE) + dnorm(x[3], 0, 100, log=TRUE)
+  return(lnP)
+}
+prior(c(0, 3, 10))</code></pre>
+<pre><code>## [1] -9.714571</code></pre>
+<p>But what if a user wants to modify the distributions? Or use a different distribution than a normal distribution? What can you do to make it more flexible?</p>
+<pre class="r"><code>make.prior &lt;- function(fns, pars){
+  prior &lt;- function(x) fns[[1]](x[1], pars[[1]][1], pars[[1]][2], log=TRUE) + fns[[2]](x[2], pars[[2]][1], pars[[2]][2], log=TRUE) + fns[[3]](x[3], pars[[3]][1], pars[[3]][2], log=TRUE)
+  return(prior)
+}</code></pre>
+<p>Now let’s test it out.</p>
+<pre class="r"><code>fns &lt;- list(A=dnorm, B=dnorm, C=dnorm)
+pars &lt;- list(A=c(mean=0, sd=1), B=c(mean=0, sd=10), C=c(mean=0, sd=100))
+prior &lt;- make.prior(fns, pars)
+prior(c(0,3,10))</code></pre>
+<pre><code>## [1] -9.714571</code></pre>
+<p>Yay! We get the same answer. But now try changing one of the functions to an exponential distribution, <code>dexp</code>:</p>
+<pre class="r"><code>fns &lt;- list(A=dnorm, B=dnorm, C=dexp)
+pars &lt;- list(A=c(mean=0, sd=1), B=c(mean=0, sd=10), C=c(rate=1))
+prior &lt;- make.prior(fns, pars)
+try(prior(c(0,3,10)))</code></pre>
+<pre><code>## Error in fns[[3]](x[3], pars[[3]][1], pars[[3]][2], log = TRUE) : 
+##   unused argument (pars[[3]][2])</code></pre>
+<p>It breaks because the exponential distribution has only 1 parameter, and our code asks for 2. Also, what if we want to add a fourth parameter? Do we need to rewrite the function every time?</p>
+<p>Here’s one way we could maybe make an more elegant solution. We can make use of what are called <code>formals</code>.</p>
+<pre class="r"><code>formals(dnorm)</code></pre>
+<pre><code>## $x
+## 
+## 
+## $mean
+## [1] 0
+## 
+## $sd
+## [1] 1
+## 
+## $log
+## [1] FALSE</code></pre>
+<p>Notice that we see the default values of the formal arguments <code>$mean</code>=0 and <code>$sd</code>=1. Guess what, we can change these (PS, this is kind of scary):</p>
+<pre class="r"><code>formals(dnorm)$sd &lt;- 10
+formals(dnorm)</code></pre>
+<pre><code>## $x
+## 
+## 
+## $mean
+## [1] 0
+## 
+## $sd
+## [1] 10
+## 
+## $log
+## [1] FALSE</code></pre>
+<p>While we wouldn’t want to do this in the global environment, messing with formals inside a function ensures that it only modifies the functions <em>within the scope of the function</em>, and not in the global environment.</p>
+<pre class="r"><code>make.prior &lt;- function(fns, pars){
+  ## Fill this in
+  return(prior)
+}
+
+fns &lt;- list(A=dnorm, B=dnorm, C=dexp)
+pars &lt;- list(A=list(mean=0, sd=1), B=list(mean=0, sd=10), C=list(rate=1))
+prior &lt;- make.prior(fns, pars)
+prior(c(0,3,10)) #-14.18546</code></pre>
+<p>Challenge, now make it work for an arbitrary number of parameters (e.g. 4 parameters as shown below).</p>
+<pre class="r"><code>make.prior &lt;- function(fns, pars){
+  ## Fill this in
+  return(prior)
+}
+
+fns &lt;- list(A=dnorm, B=dnorm, C=dlnorm, D=dunif)
+pars &lt;- list(A=list(mean=0, sd=1), B=list(mean=0, sd=10), C=list(meanlog=0, sdlog=1), D=list(min=0, max=10))
+prior &lt;- make.prior(fns, pars)
+prior(c(0,3,10,5))  #-12.36052
+prior(c(0,3,10,11)) #-Inf since 11 &gt; than max=10 for D.</code></pre>
+<p>Notice that we can see all the details of the prior function using the <code>environment</code> function again:</p>
+<pre class="r"><code>as.list(environment(prior))</code></pre>
+<pre><code>## $prior
+## function(x) fns[[1]](x[1], pars[[1]][1], pars[[1]][2], log=TRUE) + fns[[2]](x[2], pars[[2]][1], pars[[2]][2], log=TRUE) + fns[[3]](x[3], pars[[3]][1], pars[[3]][2], log=TRUE)
+## &lt;bytecode: 0x7f8f12c59260&gt;
+## &lt;environment: 0x7f8f12278708&gt;
+## 
+## $fns
+## $fns$A
+## function (x, mean = 0, sd = 1, log = FALSE) 
+## .Call(C_dnorm, x, mean, sd, log)
+## &lt;bytecode: 0x7f8f17012190&gt;
+## &lt;environment: namespace:stats&gt;
+## 
+## $fns$B
+## function (x, mean = 0, sd = 1, log = FALSE) 
+## .Call(C_dnorm, x, mean, sd, log)
+## &lt;bytecode: 0x7f8f17012190&gt;
+## &lt;environment: namespace:stats&gt;
+## 
+## $fns$C
+## function (x, rate = 1, log = FALSE) 
+## .Call(C_dexp, x, 1/rate, log)
+## &lt;bytecode: 0x7f8f1302d8c0&gt;
+## &lt;environment: namespace:stats&gt;
+## 
+## 
+## $pars
+## $pars$A
+## mean   sd 
+##    0    1 
+## 
+## $pars$B
+## mean   sd 
+##    0   10 
+## 
+## $pars$C
+## rate 
+##    1</code></pre>
+</div>
+<div id="exercise-3-make-an-s3-generic-functiont-to-print-an-informative-prior-function-definition." class="section level2">
+<h2>Exercise 3: Make an S3 Generic functiont to print an informative prior function definition.</h2>
+</div>

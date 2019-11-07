@@ -2,7 +2,7 @@
 title: "Functional Programming in R"
 author: "Josef Uyeda"
 date: "2019-11-05"
-output: html_notebook
+output: html_document
 ---
 
 This is a quick tutorial on functional programming in R with respect to phylogenetics. I am using the functional programming definitions available [here](http://adv-r.had.co.nz/Functional-programming.html), which is a good resource for further information. We will discuss some tricks to make your phylogenetics applications more efficient and flexible in R. 
@@ -215,7 +215,7 @@ formals(dnorm)
 
 While we wouldn't want to do this in the global environment, messing with formals inside a function ensures that it only modifies the functions _within the scope of the function_, and not in the global environment. 
 
-```{r}
+```{r, eval = FALSE}
 make.prior <- function(fns, pars){
   ## Fill this in
   return(prior)
@@ -229,7 +229,7 @@ prior(c(0,3,10)) #-14.18546
 
 Challenge, now make it work for an arbitrary number of parameters (e.g. 4 parameters as shown below).
 
-```{r}
+```{r, eval = FALSE}
 make.prior <- function(fns, pars){
   ## Fill this in
   return(prior)
