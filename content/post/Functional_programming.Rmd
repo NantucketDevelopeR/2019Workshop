@@ -134,9 +134,32 @@ powerFns$powerExp10(2)
 sapply(powerFns, function(x) x(2))
 ```
 
+## Exercise 1: Make an S3 generic function to print a more useful definition
+Let's make use of classes. We are going to define a new class for our power function, let's call it `powerFn`, and write a `print` method that gives us useful information. 
+
+```{r}
+power <- function(exponent) {
+  fn <- function(x) {
+    x ^ exponent
+  }
+  class(fn) <- "powerFn"
+  return(fn)
+}
+cube <- power(3)
+class(cube)
+```
+
+Now currently we have no methods for a powerFn, and it inherits the class "function". Let's define our print function:
+
+```{r}
+print.powerFn <- function(x, ...){
+ 
+}
+cube
+```
 
 
-## Exercise: Making a function lets users specify priors
+## Exercise 2: Making a function lets users specify priors
 
 Suppose you want to make a prior function for 3 parameters (a, b, c) with different distributions, how will you do it? Well you could do the following:
 
@@ -224,3 +247,5 @@ Notice that we can see all the details of the prior function using the `environm
 ```{r}
 as.list(environment(prior))
 ```
+
+## Exercise 3: Make an S3 Generic functiont to print an informative prior function definition.
