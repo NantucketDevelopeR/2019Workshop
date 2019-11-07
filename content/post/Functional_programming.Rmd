@@ -151,8 +151,7 @@ Now currently we have no methods for a powerFn, and it inherits the class "funct
 
 ```{r}
 print.powerFn <- function(x, ...){
-  cat("A power function with base:")
-  cat(as.list(environment(cube))$exponent)
+ 
 }
 cube
 ```
