@@ -1,5 +1,7 @@
 ---
 title: "Functional Programming in R"
+author: "Josef Uyeda"
+date: "2019-11-05"
 output: html_notebook
 ---
 
